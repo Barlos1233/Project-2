@@ -1,12 +1,69 @@
 @startuml class
 
-class User {
-    email
-    name
-    creation_date
-    role
-    password
-    active
+hide empty members
+skinparam classAttributeIconSize 0
+
+enum UserRole {
+    STUDENT
+    VENDOR
 }
+
+enum ReservationStatus {
+    ACTIVE
+    PICKED_UP
+    CANCELLED
+    NO_SHOW
+}
+
+class User {
+    +id: int
+    +name: str
+    +email: str <<unique>>
+    +password_hash: str
+    +role: UserRole
+    +created_at: datetime
+    +is_active: bool
+}
+
+class Listing {
+    +id: int
+    +vendor_id: int
+    +title: str
+    +description: text
+    +total_portions: int
+    +pickup_location: str
+    +pickup_start: datetime
+    +pickup_end: datetime
+    +is_cancelled: bool
+    +created_at: datetime
+    +portions_remaining(): int
+}
+
+class Reservation {
+    +id: int
+    +listing_id: int
+    +student_id: int
+    +portions: int
+    +pickup_code: str <<unique, 6 characters>>
+    +status: ReservationStatus
+    +created_at: datetime
+}
+
+class DietaryTag {
+    +id: int
+    +name: str <<unique>>
+}
+
+class ListingDietaryTag <<association table>> {
+    +listing_id: int <<PK, FK>>
+    +dietary_tag_id: int <<PK, FK>>
+}
+
+User "1\nvendor" -- "0..*\nlistings" Listing : posts
+User "1\nstudent" -- "0..*\nreservations" Reservation : makes
+Listing "1" -- "0..*\nreservations" Reservation : has
+Listing "0..*" -- "0..*" DietaryTag : tagged with
+ListingDietaryTag .. Listing
+ListingDietaryTag .. DietaryTag
 
 @enduml

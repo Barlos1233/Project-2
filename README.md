@@ -183,6 +183,14 @@ Include a **Dockerfile** for the web app and a **docker-compose.yml** with at le
 * db: the official postgres image, with a named volume so data survives restarts.
 * web: your Flask app, built from the **Dockerfile**, waiting for db to be ready before starting.
 
+To start the development setup, optionally copy `.env.example` to `.env` and replace its placeholder values, then run this from the repository root:
+
+```powershell
+docker compose up --build
+```
+
+Open the app at http://localhost:5000. The `/healthz` endpoint checks the PostgreSQL connection. Docker Compose has local-only development defaults so the app also starts if no `.env` file is present; set your own values in `.env` for local work, and do not commit that file. The default Flask development server and credentials are for development only.
+
 The instructor must be able to run the app with a single command from the repository root:
 
 ```
