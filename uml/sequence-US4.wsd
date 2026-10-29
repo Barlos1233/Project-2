@@ -26,9 +26,9 @@ else valid request
     DB --> Listing : listing row
     Listing --> Service : listing
     Service -> Listing : portions_remaining()
-    Listing -> DB : SELECT SUM(portions) of active reservations
-    DB --> Listing : portions already reserved
-    Listing --> Service : total_portions - reserved
+    Listing -> DB : SUM portions for this listing where status != CANCELLED; default 0
+    DB --> Listing : allocated_portions
+    Listing --> Service : total_portions - allocated_portions
     Service -> Reservation : find_active(student_id, listing_id)
     Reservation -> DB : SELECT active reservation
     DB --> Reservation : result

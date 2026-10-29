@@ -123,7 +123,7 @@ Before Sprint 1 starts, your team estimates every story and ranks the backlog us
 | US8 | Filter listings | 2 | 3 | 0.67 | 4 |
 | US9 | Impact dashboard | 1 | 5 | 0.20 | 10 |
 | US10 | Rate a pickup | 1 | 3 | 0.33 | 9 |
-| **Total** | 23 | 43 |  |  |  |
+| **Total** | | 23 | 43 |  |  |
 
 Priority Score Formula: 
 
