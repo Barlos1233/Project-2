@@ -1,0 +1,59 @@
+@startuml sequence-US4
+title US4 - Reserve portions
+autonumber
+
+actor Student
+participant "Browser" as Browser
+participant "Flask route\nPOST /listings/{id}/reserve" as Route
+participant "ReservationService" as Service
+participant "Listing\n(model)" as Listing
+participant "Reservation\n(model)" as Reservation
+database "PostgreSQL" as DB
+
+Student -> Browser : choose 1 or 2 portions, click "Reserve"
+Browser -> Route : POST portions
+Route -> Route : check logged in as Student
+
+alt not logged in as Student
+    Route --> Browser : redirect to login / access denied
+else portions not 1 or 2
+    Route --> Browser : error "choose 1 or 2 portions"
+else valid request
+    Route -> Service : reserve(student_id, listing_id, portions)
+    Service -> DB : BEGIN
+    Service -> Listing : get_for_update(listing_id)
+    Listing -> DB : SELECT ... FOR UPDATE (lock row)
+    DB --> Listing : listing row
+    Listing --> Service : listing
+    Service -> Listing : portions_remaining()
+    Listing -> DB : SUM portions for this listing where status != CANCELLED; default 0
+    DB --> Listing : allocated_portions
+    Listing --> Service : total_portions - allocated_portions
+    Service -> Reservation : find_active(student_id, listing_id)
+    Reservation -> DB : SELECT active reservation
+    DB --> Reservation : result
+    Reservation --> Service : existing reservation or none
+
+    alt listing cancelled, ended, or not found
+        Service -> DB : ROLLBACK
+        Service --> Route : error "listing not available"
+        Route --> Browser : error message
+    else student already has active reservation
+        Service -> DB : ROLLBACK
+        Service --> Route : error "you already have a reservation"
+        Route --> Browser : error message
+    else portions requested > portions remaining
+        Service -> DB : ROLLBACK
+        Service --> Route : error "not enough portions left"
+        Route --> Browser : error message
+    else enough portions left
+        Service -> Service : generate unique 6-character pickup code
+        Service -> Reservation : create(student_id, listing_id, portions, code)
+        Reservation -> DB : INSERT reservation (status = ACTIVE)
+        Service -> DB : COMMIT
+        Service --> Route : reservation with pickup code
+        Route --> Browser : confirmation page with pickup code
+        Browser --> Student : show 6-character pickup code
+    end
+end
+@enduml
