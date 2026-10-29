@@ -11,7 +11,7 @@ Each team designates one member as the **Scrum Master** before Sprint 1 begins a
 The Product Owner role is played by the instructor. The instructor has written the backlog and set the user value of each story; your team decides effort, priority within the rules below, and how the work is split.
 
 ```
-Scrum Master: <student's name>
+Scrum Master: Carlos Viramontes
 ```
 
 # Project Vision
@@ -149,10 +149,10 @@ Justification (one or two sentences: team size, hours available, course load): <
 
 | Sprint | User stories (in order) | Story points planned | Points remaining after sprint | Dependencies checked (Y/N) |
 | --- | --- | --- | --- | --- |
-| Sprint 1 |  |  |  |  |
-| Sprint 2 |  |  |  |  |
-| Sprint 3 |  |  |  |  |
-| **Total** |  |  | — | — |
+| Sprint 1 | US1 -> US2 -> US3 | 11 | 24 | Y |
+| Sprint 2 | US4 -> US7 | 13 | 11 | Y |
+| Sprint 3 | US6 -> US5 -> US8 | 11 | 0 | Y |
+| **Total** | US1-US8 | 35 | — | — |
 
 # Sprint Boards
 
