@@ -113,17 +113,17 @@ Before Sprint 1 starts, your team estimates every story and ranks the backlog us
 
 | ID | Short name | User value | Story points | Priority score | Rank |
 | --- | --- | --- | --- | --- | --- |
-| US1 | Register and log in | 3 |  |  |  |
-| US2 | Post a listing | 3 |  |  |  |
-| US3 | Browse listings | 3 |  |  |  |
-| US4 | Reserve portions | 3 |  |  |  |
-| US5 | Manage listings | 2 |  |  |  |
-| US6 | My reservations | 2 |  |  |  |
-| US7 | Confirm pickup | 3 |  |  |  |
-| US8 | Filter listings | 2 |  |  |  |
-| US9 | Impact dashboard | 1 |  |  |  |
-| US10 | Rate a pickup | 1 |  |  |  |
-| **Total** |  |  |  |  |  |
+| US1 | Register and log in | 3 | 3 | 1.00 | 1 |
+| US2 | Post a listing | 3 | 5 | 0.60 | 5 |
+| US3 | Browse listings | 3 | 3 | 1.00 | 2 |
+| US4 | Reserve portions | 3 | 8 | 0.38 | 8 |
+| US5 | Manage listings | 2 | 5 | 0.40 | 7 |
+| US6 | My reservations | 2 | 3 | 0.67 | 3 |
+| US7 | Confirm pickup | 3 | 5 | 0.60 | 6 |
+| US8 | Filter listings | 2 | 3 | 0.67 | 4 |
+| US9 | Impact dashboard | 1 | 5 | 0.20 | 10 |
+| US10 | Rate a pickup | 1 | 3 | 0.33 | 9 |
+| **Total** | 23 | 43 |  |  |  |
 
 Priority Score Formula: 
 
