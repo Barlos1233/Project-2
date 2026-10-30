@@ -149,10 +149,10 @@ Justification (one or two sentences: team size, hours available, course load): <
 
 | Sprint | User stories (in order) | Story points planned | Points remaining after sprint | Dependencies checked (Y/N) |
 | --- | --- | --- | --- | --- |
-| Sprint 1 | US1 -> US2 -> US3 | 11 | 24 | Y |
-| Sprint 2 | US4 -> US7 | 13 | 11 | Y |
-| Sprint 3 | US6 -> US5 -> US8 | 11 | 0 | Y |
-| **Total** | US1-US8 | 35 | — | — |
+| Sprint 1 | US1 -> US2 -> US3 -> US8 | 11 | 24 | Y |
+| Sprint 2 | US4 -> US6 -> US7 | 13 | 11 | Y |
+| Sprint 3 | US5 -> US9 -> US10 | 11 | 0 | Y |
+| **Total** | US1-US10 | 43 | — | — |
 
 # Sprint Boards
 
