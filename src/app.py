@@ -16,7 +16,7 @@ db = SQLAlchemy()
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     
-    name = db.Column(db.String(80), nullable=False)
+    name = db.Column(db.String(199), nullable=False)
     
     email = db.Column(
         db.String(255),
@@ -47,9 +47,9 @@ def create_app():
     
     app.jinja_env.globals["form_token"] = form_token
     
-    def valid_form_token(token):
+    def valid_form_token():
         submitted = request.form.get("csrf_token", "")
-        expected = session.get("csrf_token", "")
+        expected = session.get("_csrf_token", "")
         return bool(expected) and hmac.compare_digest(submitted, expected)
 
     # existing homepage
@@ -130,26 +130,25 @@ def create_app():
                     flash("Registration successful! Please login.")
                     return redirect(url_for("login"))
                 
-        return render_template("register.html", errors=errors)
+        return render_template("Register.html", errors=errors)
     
     # US1: Login page
     @app.route("/login", methods=["GET", "POST"])
     def login():
-        errors = None
-        
-        if requested.method == "POST":
+        error = None
+
+        if request.method == "POST":
             if not valid_form_token():
                 abort(400)
-            
+                
             email = request.form.get("email", "").strip().lower()
             password = request.form.get("password", "")
             
-            # A failed login must not leave a previous login active
             session.pop("user_id", None)
             
-            if not email or not password: 
+            if not email or not password:
                 error = "Email and password are required."
-            else: 
+            else:
                 user = db.session.execute(
                     db.select(User).filter_by(email=email)
                 ).scalar_one_or_none()
@@ -157,15 +156,15 @@ def create_app():
                 if user and check_password_hash(user.password_hash, password):
                     session.clear()
                     session["user_id"] = user.id
-                    
+                
                     if user.role == "Student":
                         return redirect(url_for("student_home"))
                     elif user.role == "Vendor":
                         return redirect(url_for("vendor_home"))
-                error = "Invalid email or password."
-            return render_template("login.html", error=error)
-        
-        # US1: Student homepage
+                error = "Invalid email or password." 
+        return render_template("login.html", error=error)
+    
+    # US1: Student homepage
     @app.route("/student/home")
     def student_home():
         user_id = session.get("user_id")
@@ -198,9 +197,9 @@ def create_app():
         return render_template("vendor_home.html", user=user)
     
     # US1: Logout 
-    @app.route("/logout")
+    @app.post("/logout")
     def logout():
-        if not valid_from_token():
+        if not valid_form_token():
             abort(400)
         
         session.clear()
