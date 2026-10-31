@@ -1,0 +1,44 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CampusEats - Login</title>
+</head>
+<body>
+
+<h1>CampusEats Login</h1>
+
+{% with messages = get_flashed_messages() %}
+    {% for message in messages %}
+        <p>{{ message }}</p>
+    {% endfor %}
+{% endwith %}
+
+{% if error %}
+    <p style="color: red;">{{ error }}</p>
+{% endif %}
+
+<form method="POST" novalidate>
+    <input type="hidden" name="csrf_token" value="{{ form_token() }}">
+
+    <p>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email">
+    </p>
+
+    <p>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password">
+    </p>
+
+    <button type="submit">Log In</button>
+</form>
+
+<p>
+    Don't have an account?
+    <a href="{{ url_for('register') }}">Register</a>
+</p>
+
+</body>
+</html>
