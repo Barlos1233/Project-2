@@ -62,8 +62,22 @@ class ListingDietaryTag <<association table>> {
 User "1\nvendor" -- "0..*\nlistings" Listing : posts
 User "1\nstudent" -- "0..*\nreservations" Reservation : makes
 Listing "1" -- "0..*\nreservations" Reservation : has
-Listing "0..*" -- "0..*" DietaryTag : tagged with
-ListingDietaryTag .. Listing
-ListingDietaryTag .. DietaryTag
+Listing "1" -- "0..*" ListingDietaryTag
+DietaryTag "1" -- "0..*" ListingDietaryTag
+
+note right of Listing
+  total_portions must be 1..100
+  Owner must have role VENDOR
+  Status is derived from is_cancelled and pickup_end
+  Remaining portions = total_portions minus
+  portions in non-cancelled reservations
+end note
+
+note right of Reservation
+  portions must be 1..2
+  Owner must have role STUDENT
+  At most one ACTIVE reservation per student per listing
+  ACTIVE becomes NO_SHOW after pickup_end
+end note
 
 @enduml
