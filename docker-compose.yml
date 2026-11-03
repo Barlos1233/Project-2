@@ -18,6 +18,7 @@ services:
     environment:
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-campuseats}:${POSTGRES_PASSWORD:-campuseats-dev-password}@db:5432/${POSTGRES_DB:-campuseats}
       SECRET_KEY: ${SECRET_KEY:-local-development-only-change-me}
+      CAMPUS_TZ: ${CAMPUS_TZ:-UTC}
     ports:
       - "5000:5000"
     depends_on:

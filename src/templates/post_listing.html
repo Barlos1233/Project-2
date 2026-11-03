@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Post a listing</title>
+  </head>
+  <body>
+    <h1>Post a listing</h1>
+    {% with messages = get_flashed_messages() %}
+      {% for message in messages %}
+        <p>{{ message }}</p>
+      {% endfor %}
+    {% endwith %}
+    <form method="post">
+      {{ form.hidden_tag() }}
+      {% for field in form if field.type not in ("CSRFTokenField", "SubmitField") %}
+        <div>
+          {{ field.label }}
+          {{ field() }}
+          {% for error in field.errors %}
+            <small>{{ error }}</small>
+          {% endfor %}
+        </div>
+      {% endfor %}
+      {{ form.submit() }}
+    </form>
+  </body>
+</html>

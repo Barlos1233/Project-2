@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>My listings</title>
+  </head>
+  <body>
+    <h1>My listings</h1>
+    {% for listing in listings %}
+      <article>
+        <h2>{{ listing.title }}</h2>
+        <p>{{ listing.description }}</p>
+        <p>{{ listing.portions }} portions</p>
+        <p>{{ listing.pickup_location }}</p>
+        <p>{{ listing.pickup_start }} – {{ listing.pickup_end }}</p>
+      </article>
+    {% else %}
+      <p>You have no listings yet.</p>
+    {% endfor %}
+  </body>
+</html>
