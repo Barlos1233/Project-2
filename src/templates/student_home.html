@@ -1,0 +1,21 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CampusEats - Student Home</title>
+</head>
+<body>
+
+<h1>Welcome, {{ user.name }}!</h1>
+<h2>Student Home Page</h2>
+
+<p>You are logged in as a Student.</p>
+
+<form method="POST" action="{{ url_for('logout') }}">
+    {{ form.hidden_tag() }}
+    {{ form.submit() }}
+</form>
+
+</body>
+</html>

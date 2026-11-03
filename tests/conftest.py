@@ -22,10 +22,11 @@ def app(monkeypatch):
     monkeypatch.setenv("DATABASE_URL", "sqlite://")
     monkeypatch.setenv("CAMPUS_TZ", "UTC")
 
-    from app import create_app
     from models import Listing
 
     Listing.__table__.c.dietary_tags.type = JSON()
+    from app import create_app
+
     application = create_app()
     application.config.update(TESTING=True, WTF_CSRF_ENABLED=False)
     with application.app_context():
