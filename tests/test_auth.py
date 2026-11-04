@@ -1,4 +1,5 @@
 def test_registration_login_home_and_logout(client):
+    # Make a new student account, sign in, visit the home page, and sign out.
     registration = client.post(
         "/register",
         data={

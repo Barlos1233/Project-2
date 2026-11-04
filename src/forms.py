@@ -4,6 +4,8 @@ from wtforms.validators import DataRequired, Email, Length
 
 
 class RegistrationForm(FlaskForm):
+    # US1: Validate the required registration details and supported account roles.
+    # These boxes collect the details needed to create an account.
     name = StringField("Name", validators=[DataRequired(), Length(max=100)])
     email = StringField(
         "Email", validators=[DataRequired(), Email(), Length(max=255)]

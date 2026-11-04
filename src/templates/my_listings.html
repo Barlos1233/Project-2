@@ -5,7 +5,9 @@
     <title>My listings</title>
   </head>
   <body>
+    <!-- Show the vendor's own food listings. -->
     <h1>My listings</h1>
+    <!-- Make one card for every listing the app sends to this page. -->
     {% for listing in listings %}
       <article>
         <h2>{{ listing.title }}</h2>
@@ -15,6 +17,7 @@
         <p>{{ listing.pickup_start }} – {{ listing.pickup_end }}</p>
       </article>
     {% else %}
+      <!-- Show this note when the vendor has not posted any listings yet. -->
       <p>You have no listings yet.</p>
     {% endfor %}
   </body>

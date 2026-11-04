@@ -5,19 +5,24 @@
     <title>Log in</title>
   </head>
   <body>
+    <!-- Show the sign-in page title. -->
     <h1>CampusEats Login</h1>
+    <!-- Display messages such as a wrong email or password. -->
     {% with messages = get_flashed_messages() %}
       {% for message in messages %}
         <p>{{ message }}</p>
       {% endfor %}
     {% endwith %}
+    <!-- Ask the user for their email and password. -->
     <form method="post">
       {{ form.hidden_tag() }}
+      <!-- Email box and any email error. -->
       <p>
         {{ form.email.label }}
         {{ form.email() }}
         {% for error in form.email.errors %}<small>{{ error }}</small>{% endfor %}
       </p>
+      <!-- Password box and any password error. -->
       <p>
         {{ form.password.label }}
         {{ form.password() }}
@@ -25,6 +30,7 @@
       </p>
       {{ form.submit() }}
     </form>
+    <!-- Give new users a link to the registration page. -->
     <p>Don't have an account? <a href="{{ url_for('auth.register') }}">Register</a></p>
   </body>
 </html>

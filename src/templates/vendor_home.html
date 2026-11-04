@@ -7,11 +7,13 @@
 </head>
 <body>
 
+<!-- Welcome the signed-in vendor by name. -->
 <h1>Welcome, {{ user.name }}!</h1>
 <h2>Vendor Home Page</h2>
 
 <p>You are logged in as a Vendor.</p>
 
+<!-- Show a button that lets the vendor sign out. -->
 <form method="POST" action="{{ url_for('logout') }}">
     {{ form.hidden_tag() }}
     {{ form.submit() }}

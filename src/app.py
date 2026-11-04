@@ -10,20 +10,24 @@ from listings.routes import listings_bp
 
 
 def create_app():
+    # Build the Flask app and read its private settings from the environment.
     app = Flask(__name__)
     app.config["SECRET_KEY"] = os.environ["SECRET_KEY"]
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["DATABASE_URL"]
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["CAMPUS_TZ"] = os.environ.get("CAMPUS_TZ", "UTC")
 
+    # Connect the database, sign-in helper, and page groups to this app.
     db.init_app(app)
     login_manager.init_app(app)
     app.register_blueprint(auth_bp)
     app.register_blueprint(listings_bp)
 
+    # Make sure the database tables exist before the app starts serving pages.
     with app.app_context():
         db.create_all()
 
+    # Keep the short login links working alongside the /auth links.
     app.add_url_rule(
         "/login",
         endpoint="login",
@@ -45,16 +49,19 @@ def create_app():
 
     @app.get("/")
     def index():
+        # Tell a visitor that the app is running.
         return jsonify(name="CampusEats", status="running")
 
     @app.get("/healthz")
     def health():
+        # Ask the database a tiny question to check that it is reachable.
         db.session.execute(text("SELECT 1"))
         return jsonify(status="ok")
 
     @app.get("/student/home")
     @login_required
     def student_home():
+        # Only students should see the student home page.
         if current_user.role != "Student":
             abort(403)
         from auth.forms import LogoutForm
@@ -66,6 +73,7 @@ def create_app():
     @app.get("/vendor/home")
     @login_required
     def vendor_home():
+        # Only vendors should see the vendor home page.
         if current_user.role != "Vendor":
             abort(403)
         from auth.forms import LogoutForm
@@ -76,9 +84,11 @@ def create_app():
 
     @app.errorhandler(403)
     def forbidden(error):
+        # Show a friendly page when someone tries to open a page they cannot use.
         return render_template("403.html"), 403
 
     return app
 
 
+# Create the app object that Flask runs.
 app = create_app()

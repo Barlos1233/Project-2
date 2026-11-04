@@ -5,6 +5,7 @@ from flask_login import current_user, login_required
 
 
 def vendor_required(view):
+    # Check sign-in first, then make sure the person has a vendor account.
     @wraps(view)
     @login_required
     def wrapped(*args, **kwargs):

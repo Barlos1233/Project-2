@@ -8,10 +8,12 @@ from models import Listing
 
 
 FMT = "%Y-%m-%dT%H:%M"
+# Use a nearby time so test pickup windows are easy to set.
 now = datetime.now()
 
 
 def payload(start, end):
+    # Build the answers a vendor would enter on the listing form.
     return {
         "title": "Pasta night",
         "description": "Leftovers",
@@ -44,6 +46,7 @@ def payload(start, end):
     ],
 )
 def test_invalid_window_not_saved(client, vendor, start, end, message):
+    # Bad pickup times should show an error and should not save a listing.
     login(client, vendor)
 
     response = client.post("/listings/new", data=payload(start, end))
@@ -54,6 +57,7 @@ def test_invalid_window_not_saved(client, vendor, start, end, message):
 
 
 def test_valid_window_saved(client, vendor):
+    # A good pickup window should save a listing for the signed-in vendor.
     login(client, vendor)
 
     response = client.post(
@@ -67,6 +71,7 @@ def test_valid_window_saved(client, vendor):
 
 
 def test_student_denied_get(client, student):
+    # A student should not be allowed to open the vendor listing form.
     login(client, student)
 
     response = client.get("/listings/new")
@@ -76,6 +81,7 @@ def test_student_denied_get(client, student):
 
 
 def test_student_denied_post_and_nothing_saved(client, student):
+    # A student should not be able to save a listing by sending the form directly.
     login(client, student)
 
     response = client.post(
@@ -88,6 +94,7 @@ def test_student_denied_post_and_nothing_saved(client, student):
 
 
 def test_anonymous_redirected_to_login(client):
+    # A visitor who is not signed in should be sent to the login page.
     response = client.get("/listings/new")
 
     assert response.status_code == 302
