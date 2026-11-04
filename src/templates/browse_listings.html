@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Browse Listings</title>
+</head>
+<body>
+
+<h1>Available Listings</h1>
+
+{% if listings %}
+
+    {% for listing in listings %}
+
+        <div style="border:1px solid black;padding:10px;margin-bottom:10px;">
+
+            <h2>{{ listing.title }}</h2>
+
+            <p>
+                <strong>Vendor:</strong>
+                {{ listing.vendor.name }}
+            </p>
+
+            <p>
+                <strong>Pickup Location:</strong>
+                {{ listing.pickup_location }}
+            </p>
+
+            <p>
+                <strong>Dietary Tags:</strong>
+                {{ listing.dietary_tags }}
+            </p>
+
+            <p>
+                <strong>Portions Remaining:</strong>
+                {{ listing.portions }}
+            </p>
+
+            <p>
+                <strong>Pickup Window:</strong>
+                {{ listing.pickup_start }}
+                -
+                {{ listing.pickup_end }}
+            </p>
+
+        </div>
+
+    {% endfor %}
+
+{% else %}
+
+    <p>No listings available.</p>
+
+{% endif %}
+
+</body>
+</html>

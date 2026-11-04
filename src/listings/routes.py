@@ -1,5 +1,8 @@
+from datetime import datetime, timezone
+from flask_login import current_user, login_required
+
 from flask import Blueprint, flash, redirect, render_template, url_for
-from flask_login import current_user
+from flask_login import current_user, login_required
 
 from decorators import vendor_required
 from extensions import db
@@ -50,9 +53,25 @@ def my_listings():
 
 
 # The following handlers are placeholders and are not registered as routes yet.
+@listings_bp.get("/")
+@login_required
 def browse_listings():
-    # TODO (US3): Show eligible listings to students, sorted by pickup end, with an empty state.
-    pass
+
+    now = datetime.now(timezone.utc)
+
+    listings = (
+        Listing.query
+        .filter(Listing.pickup_end > now)
+        .filter(Listing.portions > 0)
+        .order_by(Listing.pickup_end.asc())
+        .all()
+    )
+
+    return render_template(
+        "browse_listings.html",
+        listings=listings
+    )
+# us4
 
 
 def reserve_listing(listing_id):
