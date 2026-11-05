@@ -1,5 +1,6 @@
 import os
 
+import click
 from flask import Flask, abort, jsonify, render_template
 from flask_login import current_user, login_required
 from sqlalchemy import text
@@ -7,6 +8,15 @@ from sqlalchemy import text
 from auth.routes import auth_bp
 from extensions import db, login_manager
 from listings.routes import listings_bp
+from models import Location
+
+
+CAMPUS_LOCATIONS = [
+    "Student Union",
+    "Library",
+    "Engineering Building",
+    "Dorms North",
+]
 
 
 def create_app():
@@ -26,6 +36,14 @@ def create_app():
     # Make sure the database tables exist before the app starts serving pages.
     with app.app_context():
         db.create_all()
+
+    @app.cli.command("seed-locations")
+    def seed_locations():
+        for name in CAMPUS_LOCATIONS:
+            if not Location.query.filter_by(name=name).first():
+                db.session.add(Location(name=name))
+        db.session.commit()
+        click.echo("Locations seeded")
 
     # Keep the short login links working alongside the /auth links.
     app.add_url_rule(

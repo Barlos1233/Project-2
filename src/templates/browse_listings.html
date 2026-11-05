@@ -1,56 +1,70 @@
-<!DOCTYPE html>
-<html>
-<head>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
     <title>Browse Listings</title>
-</head>
-<body>
+  </head>
+  <body>
+    <h1>Available Listings</h1>
 
-<h1>Available Listings</h1>
+    <form method="get" action="{{ url_for('listings.browse_listings') }}">
+      <fieldset>
+        <legend>Dietary needs (must match all)</legend>
+        {% for tag in tag_choices %}
+          <label>
+            <input type="checkbox" name="tags" value="{{ tag }}"
+                   {% if tag in selected_tags %}checked{% endif %}>
+            {{ tag.title() }}
+          </label>
+        {% endfor %}
+        <label>
+          <input type="checkbox" name="nut_free" value="1"
+                 {% if nut_free %}checked{% endif %}>
+          Nut-free only
+        </label>
+      </fieldset>
 
-{% if listings %}
+      <label>Campus location
+        <select name="location">
+          <option value="">Anywhere</option>
+          {% for loc in locations %}
+            <option value="{{ loc.id }}"
+                    {% if loc.id == location_id %}selected{% endif %}>
+              {{ loc.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </label>
 
-    {% for listing in listings %}
+      <button type="submit">Apply</button>
+      <a href="{{ url_for('listings.browse_listings') }}">Clear filters</a>
+    </form>
 
-        <div style="border:1px solid black;padding:10px;margin-bottom:10px;">
+    <p>{{ pagination.total }} listing{{ '' if pagination.total == 1 else 's' }} match</p>
 
-            <h2>{{ listing.title }}</h2>
-
-            <p>
-                <strong>Vendor:</strong>
-                {{ listing.vendor.name }}
-            </p>
-
-            <p>
-                <strong>Pickup Location:</strong>
-                {{ listing.pickup_location }}
-            </p>
-
-            <p>
-                <strong>Dietary Tags:</strong>
-                {{ listing.dietary_tags }}
-            </p>
-
-            <p>
-                <strong>Portions Remaining:</strong>
-                {{ listing.portions }}
-            </p>
-
-            <p>
-                <strong>Pickup Window:</strong>
-                {{ listing.pickup_start }}
-                -
-                {{ listing.pickup_end }}
-            </p>
-
-        </div>
-
+    {% for listing in pagination.items %}
+      <article>
+        <h3>{{ listing.title }}</h3>
+        <p>{{ listing.vendor.name }} · {{ listing.location.name }}</p>
+        <p>{{ listing.pickup_start }} – {{ listing.pickup_end }} ·
+           {{ listing.portions }} portions</p>
+        <p>{{ listing.dietary_tags | join(', ') }}</p>
+      </article>
+    {% else %}
+      <p>No food matches these filters right now.
+        <a href="{{ url_for('listings.browse_listings') }}">Clear filters</a>
+      </p>
     {% endfor %}
 
-{% else %}
-
-    <p>No listings available.</p>
-
-{% endif %}
-
-</body>
+    {% if pagination.has_prev %}
+      <a href="{{ url_for('listings.browse_listings', page=pagination.prev_num,
+                          tags=selected_tags, location=location_id,
+                          nut_free='1' if nut_free else None) }}">Previous</a>
+    {% endif %}
+    {% if pagination.has_next %}
+      <a href="{{ url_for('listings.browse_listings', page=pagination.next_num,
+                          tags=selected_tags, location=location_id,
+                          nut_free='1' if nut_free else None) }}">Next</a>
+    {% endif %}
+  </body>
 </html>

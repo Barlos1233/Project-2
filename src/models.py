@@ -4,6 +4,7 @@ from sqlalchemy.dialects.postgresql import ARRAY
 from extensions import db, login_manager
 
 DIETARY_TAGS = ["vegetarian", "vegan", "gluten-free", "halal", "contains nuts"]
+FILTERABLE_TAGS = list(DIETARY_TAGS)
 
 # US1: User accounts, role, and password hashing support registration and login.
 # A user can be a student or vendor. Passwords are saved in a protected form.
@@ -26,6 +27,11 @@ class User(UserMixin,db.Model):
         # Check a typed password against the protected saved code.
         return check_password_hash(self.password_hash, password)
 
+class Location(db.Model):
+    __tablename__ = "locations"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False, unique=True)
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -46,18 +52,22 @@ class Listing(db.Model):
     title = db.Column(db.String(120), nullable=False)
     description = db.Column(db.Text, nullable=False)
     portions = db.Column(db.Integer, nullable=False)
-    pickup_location = db.Column(db.String(255), nullable=False)
+    location_id = db.Column(
+        db.Integer, db.ForeignKey("locations.id"), nullable=False, index=True
+    )
     dietary_tags = db.Column(ARRAY(db.String), nullable=False, default=list)
     pickup_start = db.Column(db.DateTime(timezone=True), nullable=False)
     pickup_end = db.Column(db.DateTime(timezone=True), nullable=False)
     created_at = db.Column(db.DateTime(timezone=True), server_default=db.func.now())
 
     vendor = db.relationship("User", backref="listings")
+    location = db.relationship("Location")
 
     # Keep the number of portions and the pickup times within safe limits.
     __table_args__ = (
         db.CheckConstraint("portions BETWEEN 1 AND 100", name="ck_portions_range"),
         db.CheckConstraint("pickup_end > pickup_start", name="ck_window_order"),
+        db.Index("ix_listings_dietary_tags", "dietary_tags", postgresql_using="gin"),
     )
 
 

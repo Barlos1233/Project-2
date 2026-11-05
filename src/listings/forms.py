@@ -5,6 +5,7 @@ from flask import current_app
 from flask_wtf import FlaskForm
 from wtforms import (
     IntegerField,
+    SelectField,
     SelectMultipleField,
     StringField,
     SubmitField,
@@ -14,7 +15,7 @@ from wtforms.fields import DateTimeLocalField
 from wtforms.validators import DataRequired, Length, NumberRange, ValidationError
 from wtforms.widgets import CheckboxInput, ListWidget
 
-from models import DIETARY_TAGS
+from models import DIETARY_TAGS, Location
 
 
 def campus_tz():
@@ -42,8 +43,8 @@ class ListingForm(FlaskForm):
     portions = IntegerField(
         "Portions", validators=[DataRequired(), NumberRange(min=1, max=100)]
     )
-    pickup_location = StringField(
-        "Pickup location", validators=[DataRequired(), Length(max=255)]
+    location_id = SelectField(
+        "Pickup location", coerce=int, validators=[DataRequired()]
     )
     dietary_tags = MultiCheckboxField(
         "Dietary tags",
@@ -60,6 +61,13 @@ class ListingForm(FlaskForm):
         validators=[DataRequired()],
     )
     submit = SubmitField("Post")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.location_id.choices = [
+            (location.id, location.name)
+            for location in Location.query.order_by(Location.name)
+        ]
 
     def validate_pickup_end(self, field):
         # Make sure the pickup window is in the right order and still in the future.

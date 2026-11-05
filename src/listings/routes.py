@@ -1,16 +1,22 @@
 from datetime import datetime, timezone
-from flask_login import current_user, login_required
 
-from flask import Blueprint, flash, redirect, render_template, url_for
+from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
+from sqlalchemy import String, cast
 
 from decorators import vendor_required
 from extensions import db
-from models import Listing
+from models import FILTERABLE_TAGS, Listing, Location
 from .forms import ListingForm, to_utc
 
 
 listings_bp = Blueprint("listings", __name__, url_prefix="/listings")
+
+
+def _contains_tag(tag):
+    if db.session.get_bind().dialect.name == "sqlite":
+        return cast(Listing.dietary_tags, String).like(f'%"{tag}"%')
+    return Listing.dietary_tags.contains([tag])
 
 
 @listings_bp.route("/new", methods=["GET", "POST"])
@@ -26,7 +32,7 @@ def post_listing():
             title=form.title.data.strip(),
             description=form.description.data.strip(),
             portions=form.portions.data,
-            pickup_location=form.pickup_location.data.strip(),
+            location_id=form.location_id.data,
             dietary_tags=form.dietary_tags.data,
             pickup_start=to_utc(form.pickup_start.data),
             pickup_end=to_utc(form.pickup_end.data),
@@ -56,20 +62,34 @@ def my_listings():
 @listings_bp.get("/")
 @login_required
 def browse_listings():
+    selected_tags = [
+        tag for tag in request.args.getlist("tags") if tag in FILTERABLE_TAGS
+    ]
+    nut_free = request.args.get("nut_free") == "1"
+    location_id = request.args.get("location", type=int)
+    page = request.args.get("page", 1, type=int)
 
-    now = datetime.now(timezone.utc)
+    query = Listing.query.filter(Listing.pickup_end > datetime.now(timezone.utc))
+    query = query.filter(Listing.portions > 0)
+    if selected_tags:
+        query = query.filter(*(_contains_tag(tag) for tag in selected_tags))
+    if nut_free:
+        query = query.filter(~_contains_tag("contains nuts"))
+    if location_id:
+        query = query.filter(Listing.location_id == location_id)
 
-    listings = (
-        Listing.query
-        .filter(Listing.pickup_end > now)
-        .filter(Listing.portions > 0)
-        .order_by(Listing.pickup_end.asc())
-        .all()
+    pagination = query.order_by(Listing.pickup_start).paginate(
+        page=page, per_page=12, error_out=False
     )
 
     return render_template(
         "browse_listings.html",
-        listings=listings
+        pagination=pagination,
+        locations=Location.query.order_by(Location.name).all(),
+        tag_choices=FILTERABLE_TAGS,
+        selected_tags=selected_tags,
+        nut_free=nut_free,
+        location_id=location_id,
     )
 # us4
 
