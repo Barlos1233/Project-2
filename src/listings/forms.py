@@ -89,11 +89,6 @@ class PickupCodeForm:
     pass
 
 
-class ListingFilterForm:
-    # TODO (US8): Define combined dietary-tag and campus-location filters.
-    pass
-
-
 class DashboardDateRangeForm:
     # TODO (US9): Define and validate a dashboard date range.
     pass

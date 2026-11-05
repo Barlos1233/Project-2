@@ -1,12 +1,12 @@
 from datetime import datetime, timezone
 from flask_login import current_user, login_required
 
-from flask import Blueprint, flash, redirect, render_template, url_for
+from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 
 from decorators import vendor_required
 from extensions import db
-from models import Listing
+from models import DIETARY_TAGS, Listing
 from .forms import ListingForm, to_utc
 
 
@@ -52,26 +52,51 @@ def my_listings():
     return render_template("my_listings.html", listings=listings)
 
 
-# The following handlers are placeholders and are not registered as routes yet.
 @listings_bp.get("/")
 @login_required
 def browse_listings():
-
     now = datetime.now(timezone.utc)
+    selected_tags = request.args.getlist("tag")
+    selected_location = request.args.get("location", "").strip()
 
-    listings = (
-        Listing.query
-        .filter(Listing.pickup_end > now)
-        .filter(Listing.portions > 0)
-        .order_by(Listing.pickup_end.asc())
+    if any(tag not in DIETARY_TAGS for tag in selected_tags):
+        abort(400, description="Choose valid dietary tags.")
+
+    # Begin with the available listings.
+    query = Listing.query.filter(
+        Listing.pickup_end > now,
+        Listing.portions > 0,
+    )
+
+    # A listing must contain every selected tag.
+    if selected_tags:
+        query = query.filter(
+            Listing.dietary_tags.contains(selected_tags)
+        )
+
+    if selected_location:
+        query = query.filter(
+            Listing.pickup_location == selected_location
+        )
+
+    listings = query.order_by(Listing.pickup_end.asc()).all()
+
+    # Build the dropdown from existing pickup locations.
+    location_rows = (
+        Listing.query.with_entities(Listing.pickup_location)
+        .distinct()
+        .order_by(Listing.pickup_location.asc())
         .all()
     )
 
     return render_template(
         "browse_listings.html",
-        listings=listings
+        listings=listings,
+        dietary_tags=DIETARY_TAGS,
+        locations=[row[0] for row in location_rows],
+        selected_tags=selected_tags,
+        selected_location=selected_location,
     )
-# us4
 
 
 def reserve_listing(listing_id):
@@ -106,11 +131,6 @@ def cancel_reservation(reservation_id):
 
 def confirm_pickup(listing_id):
     # TODO (US7): Validate the code, listing ownership, reservation status, and pickup window.
-    pass
-
-
-def filter_listings():
-    # TODO (US8): Apply all selected dietary tags and optional campus location to listings.
     pass
 
 
