@@ -13,6 +13,9 @@
 
 <p>You are logged in as a Student.</p>
 
+<!-- Open the page with available food listings. -->
+<p><a href="{{ url_for('listings.browse_listings') }}">Browse Listings</a></p>
+
 <!-- Show a button that lets the student sign out. -->
 <form method="POST" action="{{ url_for('logout') }}">
     {{ form.hidden_tag() }}
