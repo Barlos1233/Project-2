@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reservation Confirmed</title>
+</head>
+<body>
+
+<h1>Reservation confirmed</h1>
+
+<p>Show this pickup code to the vendor:</p>
+<p style="font-size:2em;font-family:monospace;letter-spacing:0.2em;">
+    <strong id="pickup-code">{{ reservation.pickup_code }}</strong>
+</p>
+
+<p><strong>Food:</strong> {{ reservation.listing.title }}</p>
+<p><strong>Vendor:</strong> {{ reservation.listing.vendor.name }}</p>
+<p><strong>Pickup Location:</strong> {{ reservation.listing.pickup_location }}</p>
+<p>
+    <strong>Pickup Window:</strong>
+    {{ reservation.listing.pickup_start }}
+    -
+    {{ reservation.listing.pickup_end }}
+</p>
+<p><strong>Portions:</strong> {{ reservation.portions }}</p>
+
+<p><a href="{{ url_for('listings.browse_listings') }}">Back to listings</a></p>
+
+</body>
+</html>

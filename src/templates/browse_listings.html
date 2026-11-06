@@ -6,6 +6,13 @@
 <body>
 
 <h1>Available Listings</h1>
+
+{% with messages = get_flashed_messages() %}
+    {% for message in messages %}
+        <p style="color:red;">{{ message }}</p>
+    {% endfor %}
+{% endwith %}
+
 <form method="get" action="{{ url_for('listings.browse_listings') }}">
     <fieldset>
         <legend>Dietary tags</legend>
@@ -60,7 +67,7 @@
 
             <p>
                 <strong>Portions Remaining:</strong>
-                {{ listing.portions }}
+                {{ listing.portions_remaining }}
             </p>
 
             <p>
@@ -69,6 +76,18 @@
                 -
                 {{ listing.pickup_end }}
             </p>
+
+            {% if current_user.role == "Student" %}
+            <form method="post" action="{{ url_for('listings.reserve_listing', listing_id=listing.id) }}">
+                {{ reserve_form.hidden_tag() }}
+                <label for="portions-{{ listing.id }}">Portions</label>
+                <select id="portions-{{ listing.id }}" name="portions">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                </select>
+                <button type="submit">Reserve</button>
+            </form>
+            {% endif %}
 
         </div>
 

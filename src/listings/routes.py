@@ -8,6 +8,8 @@ from decorators import vendor_required
 from extensions import db
 from models import DIETARY_TAGS, Listing
 from .forms import ListingForm, to_utc
+from .reservation_service import ReservationError, reserve
+from .reserve_forms import ReserveForm
 
 
 listings_bp = Blueprint("listings", __name__, url_prefix="/listings")
@@ -62,10 +64,10 @@ def browse_listings():
     if any(tag not in DIETARY_TAGS for tag in selected_tags):
         abort(400, description="Choose valid dietary tags.")
 
-    # Begin with the available listings.
+    # Begin with the available listings (US4: at least one portion must still be free).
     query = Listing.query.filter(
         Listing.pickup_end > now,
-        Listing.portions > 0,
+        Listing.portions - Listing.portions_reserved > 0,
     )
 
     # A listing must contain every selected tag.
@@ -96,12 +98,29 @@ def browse_listings():
         locations=[row[0] for row in location_rows],
         selected_tags=selected_tags,
         selected_location=selected_location,
+        reserve_form=ReserveForm(),
     )
 
 
+@listings_bp.post("/<int:listing_id>/reserve")
+@login_required
 def reserve_listing(listing_id):
-    # TODO (US4): Validate availability, prevent duplicate/over-capacity reservations, and issue a pickup code.
-    pass
+    # US4: A student reserves 1 or 2 portions and receives a unique pickup code.
+    if current_user.role != "Student":
+        abort(403)
+
+    form = ReserveForm()
+    if not form.validate_on_submit():
+        flash("Choose 1 or 2 portions.")
+        return redirect(url_for("listings.browse_listings"))
+
+    try:
+        reservation = reserve(current_user.id, listing_id, form.portions.data)
+    except ReservationError as error:
+        flash(str(error))
+        return redirect(url_for("listings.browse_listings"))
+
+    return render_template("reservation_confirmation.html", reservation=reservation)
 
 
 def edit_listing(listing_id):
