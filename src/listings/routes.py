@@ -1,18 +1,24 @@
 from datetime import datetime, timezone
-from flask_login import current_user, login_required
 
 from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
+from sqlalchemy import String, cast
 
 from decorators import vendor_required
 from extensions import db
-from models import DIETARY_TAGS, Listing
+from models import FILTERABLE_TAGS, Listing, Location
 from .forms import ListingForm, to_utc
 from .reservation_service import ReservationError, reserve
 from .reserve_forms import ReserveForm
 
 
 listings_bp = Blueprint("listings", __name__, url_prefix="/listings")
+
+
+def _contains_tag(tag):
+    if db.session.get_bind().dialect.name == "sqlite":
+        return cast(Listing.dietary_tags, String).like(f'%"{tag}"%')
+    return Listing.dietary_tags.contains([tag])
 
 
 @listings_bp.route("/new", methods=["GET", "POST"])
@@ -28,7 +34,8 @@ def post_listing():
             title=form.title.data.strip(),
             description=form.description.data.strip(),
             portions=form.portions.data,
-            pickup_location=form.pickup_location.data.strip(),
+            portions_available=form.portions.data,
+            location_id=form.location_id.data,
             dietary_tags=form.dietary_tags.data,
             pickup_start=to_utc(form.pickup_start.data),
             pickup_end=to_utc(form.pickup_end.data),
@@ -57,47 +64,36 @@ def my_listings():
 @listings_bp.get("/")
 @login_required
 def browse_listings():
-    now = datetime.now(timezone.utc)
-    selected_tags = request.args.getlist("tag")
-    selected_location = request.args.get("location", "").strip()
+    selected_tags = [
+        tag for tag in request.args.getlist("tags") if tag in FILTERABLE_TAGS
+    ]
+    nut_free = request.args.get("nut_free") == "1"
+    location_id = request.args.get("location", type=int)
+    page = request.args.get("page", 1, type=int)
 
-    if any(tag not in DIETARY_TAGS for tag in selected_tags):
-        abort(400, description="Choose valid dietary tags.")
-
-    # Begin with the available listings (US4: at least one portion must still be free).
     query = Listing.query.filter(
-        Listing.pickup_end > now,
-        Listing.portions - Listing.portions_reserved > 0,
+        Listing.pickup_end > datetime.now(timezone.utc),
+        Listing.portions_available > 0,
     )
-
-    # A listing must contain every selected tag.
     if selected_tags:
-        query = query.filter(
-            Listing.dietary_tags.contains(selected_tags)
-        )
+        query = query.filter(*(_contains_tag(tag) for tag in selected_tags))
+    if nut_free:
+        query = query.filter(~_contains_tag("contains nuts"))
+    if location_id:
+        query = query.filter(Listing.location_id == location_id)
 
-    if selected_location:
-        query = query.filter(
-            Listing.pickup_location == selected_location
-        )
-
-    listings = query.order_by(Listing.pickup_end.asc()).all()
-
-    # Build the dropdown from existing pickup locations.
-    location_rows = (
-        Listing.query.with_entities(Listing.pickup_location)
-        .distinct()
-        .order_by(Listing.pickup_location.asc())
-        .all()
+    pagination = query.order_by(Listing.pickup_start).paginate(
+        page=page, per_page=12, error_out=False
     )
 
     return render_template(
         "browse_listings.html",
-        listings=listings,
-        dietary_tags=DIETARY_TAGS,
-        locations=[row[0] for row in location_rows],
+        pagination=pagination,
+        locations=Location.query.order_by(Location.name).all(),
+        tag_choices=FILTERABLE_TAGS,
         selected_tags=selected_tags,
-        selected_location=selected_location,
+        nut_free=nut_free,
+        location_id=location_id,
         reserve_form=ReserveForm(),
     )
 
@@ -140,12 +136,37 @@ def listing_details(listing_id):
 
 def my_reservations():
     # TODO (US6): Show the current student's reservations and their statuses.
-    pass
+    from sqlalchemy.orm import joinedload
+    from models import Reservation
+
+    return (
+        Reservation.query.filter_by(student_id=current_user.id)
+        .options(
+            joinedload(Reservation.listing).joinedload(Listing.vendor),
+            joinedload(Reservation.listing).joinedload(Listing.location),
+        )
+        .join(Listing)
+        .order_by(Listing.pickup_start.desc())
+        .all()
+    )
 
 
 def cancel_reservation(reservation_id):
     # TODO (US6): Cancel an eligible active reservation and release its portions.
-    pass
+    from models import Reservation
+
+    reservation = (
+        Reservation.query.filter_by(id=reservation_id, student_id=current_user.id)
+        .with_for_update()
+        .first_or_404()
+    )
+    listing = Listing.query.filter_by(id=reservation.listing_id).with_for_update().first_or_404()
+    if not reservation.can_cancel:
+        return False
+    reservation.status = "cancelled"
+    listing.portions_available += reservation.portions
+    db.session.commit()
+    return True
 
 
 def confirm_pickup(listing_id):

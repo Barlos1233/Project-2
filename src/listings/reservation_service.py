@@ -35,10 +35,10 @@ def reserve(student_id, listing_id, portions):
     # second one waits here until the first has finished, so the last portion
     # can only be taken once.
     listing = db.session.execute(
-        db.select(Listing.id, Listing.portions, Listing.pickup_end)
+        db.select(Listing)
         .where(Listing.id == listing_id)
         .with_for_update()
-    ).first()
+    ).scalar_one_or_none()
 
     if listing is None or listing.pickup_end <= datetime.now(timezone.utc):
         db.session.rollback()
@@ -56,18 +56,11 @@ def reserve(student_id, listing_id, portions):
         db.session.rollback()
         raise ReservationError("You already have a reservation for this listing.")
 
-    # Count the portions already taken. This is a separate query on purpose: it
-    # runs after the lock, so it sees reservations the other student just saved.
-    reserved = db.session.execute(
-        db.select(db.func.coalesce(db.func.sum(Reservation.portions), 0)).where(
-            Reservation.listing_id == listing_id,
-            Reservation.status != "cancelled",
-        )
-    ).scalar_one()
-    if portions > listing.portions - reserved:
+    if portions > listing.portions_available:
         db.session.rollback()
         raise ReservationError("Not enough portions left.")
 
+    listing.portions_available -= portions
     reservation = Reservation(
         listing_id=listing_id,
         student_id=student_id,

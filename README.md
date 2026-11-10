@@ -191,6 +191,14 @@ docker compose up --build
 
 Open the app at http://localhost:5000. The `/healthz` endpoint checks the PostgreSQL connection. Docker Compose has local-only development defaults so the app also starts if no `.env` file is present; set your own values in `.env` for local work, and do not commit that file. The default Flask development server and credentials are for development only.
 
+After the app starts, seed the pickup locations vendors can choose from:
+
+```powershell
+docker compose exec web flask --app app seed-locations
+```
+
+The command is safe to run more than once. When running Flask directly from the app directory, use `flask --app app seed-locations`.
+
 The instructor must be able to run the app with a single command from the repository root:
 
 ```

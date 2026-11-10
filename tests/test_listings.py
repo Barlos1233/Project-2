@@ -4,12 +4,17 @@ import pytest
 
 from conftest import login
 from extensions import db
-from models import Listing
+from models import Listing, Location
 
 
 FMT = "%Y-%m-%dT%H:%M"
 # Use a nearby time so test pickup windows are easy to set.
 now = datetime.now()
+
+
+@pytest.fixture(autouse=True)
+def seed_locations(app):
+    app.test_cli_runner().invoke(args=["seed-locations"])
 
 
 def payload(start, end):
@@ -18,7 +23,7 @@ def payload(start, end):
         "title": "Pasta night",
         "description": "Leftovers",
         "portions": 10,
-        "pickup_location": "Union",
+        "location_id": Location.query.filter_by(name="Student Union").one().id,
         "dietary_tags": ["vegan"],
         "pickup_start": start.strftime(FMT),
         "pickup_end": end.strftime(FMT),
@@ -68,6 +73,21 @@ def test_valid_window_saved(client, vendor):
     assert response.status_code == 302
     listing = db.session.query(Listing).one()
     assert listing.vendor_id == vendor.id
+    assert listing.location.name == "Student Union"
+    assert listing.location_id == Location.query.filter_by(name="Student Union").one().id
+
+
+def test_existing_location_is_reused(client, vendor):
+    location = Location.query.filter_by(name="Student Union").one()
+    login(client, vendor)
+
+    response = client.post(
+        "/listings/new",
+        data=payload(now + timedelta(days=1), now + timedelta(days=1, hours=1)),
+    )
+
+    assert response.status_code == 302
+    assert db.session.query(Listing).one().location_id == location.id
 
 
 def test_student_denied_get(client, student):
