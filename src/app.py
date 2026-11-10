@@ -1,22 +1,26 @@
 import os
+from zoneinfo import ZoneInfo
 
 import click
 from flask import Flask, abort, jsonify, render_template
 from flask_login import current_user, login_required
+from flask_wtf.csrf import CSRFProtect
 from sqlalchemy import text
 
 from auth.routes import auth_bp
 from extensions import db, login_manager
 from listings.routes import listings_bp
 from models import Location
+from reservations.routes import reservations_bp
 
 
 CAMPUS_LOCATIONS = [
-    "Student Union",
-    "Library",
-    "Engineering Building",
-    "Dorms North",
+    "QDOBA",
+    "EinsteinBros",
+    "Tivoli Shops",
+    "iPie Pizza",
 ]
+csrf = CSRFProtect()
 
 
 def create_app():
@@ -30,8 +34,10 @@ def create_app():
     # Connect the database, sign-in helper, and page groups to this app.
     db.init_app(app)
     login_manager.init_app(app)
+    csrf.init_app(app)
     app.register_blueprint(auth_bp)
     app.register_blueprint(listings_bp)
+    app.register_blueprint(reservations_bp)
 
     # Make sure the database tables exist before the app starts serving pages.
     with app.app_context():
@@ -44,6 +50,15 @@ def create_app():
                 db.session.add(Location(name=name))
         db.session.commit()
         click.echo("Locations seeded")
+
+    @app.template_filter("campus_time")
+    def campus_time(dt):
+        if dt is None:
+            return ""
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=ZoneInfo("UTC"))
+        tz = ZoneInfo(app.config.get("CAMPUS_TZ", "UTC"))
+        return dt.astimezone(tz).strftime("%a %b %d, %I:%M %p")
 
     # Keep the short login links working alongside the /auth links.
     app.add_url_rule(

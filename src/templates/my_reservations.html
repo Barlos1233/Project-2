@@ -1,0 +1,45 @@
+<h1>My Reservations</h1>
+
+{% for message in get_flashed_messages() %}
+  <p>{{ message }}</p>
+{% endfor %}
+
+{% if reservations %}
+<table>
+  <thead>
+    <tr>
+      <th>Listing</th>
+      <th>Vendor</th>
+      <th>Location</th>
+      <th>Pickup window</th>
+      <th>Portions</th>
+      <th>Pickup code</th>
+      <th>Status</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for r in reservations %}
+      <tr>
+        <td>{{ r.listing.title }}</td>
+        <td>{{ r.listing.vendor.name }}</td>
+        <td>{{ r.listing.location.name }}</td>
+        <td>{{ r.listing.pickup_start | campus_time }} – {{ r.listing.pickup_end | campus_time }}</td>
+        <td>{{ r.portions }}</td>
+        <td><code>{{ r.pickup_code }}</code></td>
+        <td>{{ r.status.replace('_', ' ').title() }}</td>
+        <td>
+          {% if r.can_cancel %}
+            <form method="post" action="{{ url_for('reservations.cancel', reservation_id=r.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" data-action="cancel">Cancel</button>
+            </form>
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+  <p>You have no reservations yet. <a href="{{ url_for('listings.browse_listings') }}">Browse listings</a></p>
+{% endif %}

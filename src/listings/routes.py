@@ -32,6 +32,7 @@ def post_listing():
             title=form.title.data.strip(),
             description=form.description.data.strip(),
             portions=form.portions.data,
+            portions_available=form.portions.data,
             location_id=form.location_id.data,
             dietary_tags=form.dietary_tags.data,
             pickup_start=to_utc(form.pickup_start.data),
@@ -116,12 +117,37 @@ def listing_details(listing_id):
 
 def my_reservations():
     # TODO (US6): Show the current student's reservations and their statuses.
-    pass
+    from sqlalchemy.orm import joinedload
+    from models import Reservation
+
+    return (
+        Reservation.query.filter_by(student_id=current_user.id)
+        .options(
+            joinedload(Reservation.listing).joinedload(Listing.vendor),
+            joinedload(Reservation.listing).joinedload(Listing.location),
+        )
+        .join(Listing)
+        .order_by(Listing.pickup_start.desc())
+        .all()
+    )
 
 
 def cancel_reservation(reservation_id):
     # TODO (US6): Cancel an eligible active reservation and release its portions.
-    pass
+    from models import Reservation
+
+    reservation = (
+        Reservation.query.filter_by(id=reservation_id, student_id=current_user.id)
+        .with_for_update()
+        .first_or_404()
+    )
+    listing = Listing.query.filter_by(id=reservation.listing_id).with_for_update().first_or_404()
+    if not reservation.can_cancel:
+        return False
+    reservation.status = "cancelled"
+    listing.portions_available += reservation.portions
+    db.session.commit()
+    return True
 
 
 def confirm_pickup(listing_id):
