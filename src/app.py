@@ -15,10 +15,10 @@ from reservations.routes import reservations_bp
 
 
 CAMPUS_LOCATIONS = [
-    "QDOBA",
-    "EinsteinBros",
-    "Tivoli Shops",
-    "iPie Pizza",
+    "Student Union",
+    "Library",
+    "Engineering Building",
+    "Dorms North",
 ]
 csrf = CSRFProtect()
 
