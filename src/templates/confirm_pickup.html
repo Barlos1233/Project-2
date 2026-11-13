@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Confirm pickup</title>
+</head>
+<body>
+    <h1>Confirm pickup</h1>
+    <h2>{{ listing.title }}</h2>
+    <p>{{ listing.location.name }}</p>
+    <p>
+        {{ listing.pickup_start | campus_time }}
+        to {{ listing.pickup_end | campus_time }}
+    </p>
+
+    {% for category, message in get_flashed_messages(with_categories=true) %}
+        <p role="alert">{{ message }}</p>
+    {% endfor %}
+
+    <form method="post">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.pickup_code.label }}
+            {{ form.pickup_code(size=12, maxlength=6, autocomplete="off") }}
+        </p>
+        {% for error in form.pickup_code.errors %}
+            <p>{{ error }}</p>
+        {% endfor %}
+        {{ form.submit() }}
+    </form>
+
+    <p>
+        <a href="{{ url_for('listings.my_listings') }}">Back to my listings</a>
+    </p>
+</body>
+</html>
