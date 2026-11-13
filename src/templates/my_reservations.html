@@ -27,7 +27,7 @@
         <td>{{ r.listing.pickup_start | campus_time }} – {{ r.listing.pickup_end | campus_time }}</td>
         <td>{{ r.portions }}</td>
         <td><code>{{ r.pickup_code }}</code></td>
-        <td>{{ r.status.replace('_', ' ').title() }}</td>
+        <td>{{ r.display_status.replace('_', ' ').title() }}</td>
         <td>
           {% if r.can_cancel %}
             <form method="post" action="{{ url_for('reservations.cancel', reservation_id=r.id) }}">
