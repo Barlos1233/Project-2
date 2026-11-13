@@ -92,9 +92,13 @@ class ListingEditForm:
     pass
 
 
-class PickupCodeForm:
-    # TODO (US7): Define validation for a six-character pickup code.
-    pass
+class PickupCodeForm(FlaskForm):
+    pickup_code = StringField(
+        "Pickup code",
+        filters=[lambda value: (value or "").strip().upper()],
+        validators=[DataRequired(), Length(min=6, max=6)],
+    )
+    submit = SubmitField("Confirm pickup")
 
 
 class DashboardDateRangeForm:

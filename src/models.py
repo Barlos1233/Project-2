@@ -143,6 +143,17 @@ class Reservation(db.Model):
     )
 
     @property
+    def display_status(self):
+        if (
+            self.status == "active"
+            and self.listing is not None
+            and _as_utc_datetime(self.listing.pickup_end)
+            <= datetime.now(timezone.utc)
+        ):
+            return "no_show"
+        return self.status
+
+    @property
     def can_cancel(self):
         return (
             self.status == "active"

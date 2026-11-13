@@ -6,8 +6,8 @@ from sqlalchemy import String, cast
 
 from decorators import vendor_required
 from extensions import db
-from models import FILTERABLE_TAGS, Listing, Location
-from .forms import ListingForm, to_utc
+from models import FILTERABLE_TAGS, Listing, Location, Reservation, _as_utc_datetime
+from .forms import ListingForm, PickupCodeForm, to_utc
 from .reservation_service import ReservationError, reserve
 from .reserve_forms import ReserveForm
 
@@ -169,9 +169,57 @@ def cancel_reservation(reservation_id):
     return True
 
 
+@listings_bp.route("/<int:listing_id>/pickup", methods=["GET", "POST"])
+@vendor_required
 def confirm_pickup(listing_id):
-    # TODO (US7): Validate the code, listing ownership, reservation status, and pickup window.
-    pass
+    listing = Listing.query.filter_by(
+        id=listing_id, vendor_id=current_user.id
+    ).first_or_404()
+    form = PickupCodeForm()
+
+    if form.validate_on_submit():
+        # Lock the reservation so concurrent submissions cannot confirm it twice.
+        reservation = (
+            Reservation.query.filter_by(
+                listing_id=listing.id,
+                pickup_code=form.pickup_code.data,
+            )
+            .with_for_update()
+            .first()
+        )
+        now = datetime.now(timezone.utc)
+        error = None
+
+        if reservation is None:
+            error = "Pickup code not found for this listing."
+        elif reservation.status != "active":
+            status = reservation.status.replace("_", " ")
+            error = f"This reservation is already {status}."
+        elif now < _as_utc_datetime(listing.pickup_start):
+            error = "The pickup window has not started yet."
+        elif now >= _as_utc_datetime(listing.pickup_end):
+            error = "The pickup window has ended. This reservation is a no-show."
+
+        if error:
+            db.session.rollback()
+            flash(error, "error")
+        else:
+            student_name = reservation.student.name
+            portions = reservation.portions
+            reservation.status = "picked_up"
+            db.session.commit()
+            flash(
+                f"Pickup confirmed for {student_name}. Hand out {portions} portion(s).",
+                "success",
+            )
+
+        return redirect(
+            url_for("listings.confirm_pickup", listing_id=listing_id)
+        )
+
+    return render_template(
+        "confirm_pickup.html", listing=listing, form=form
+    )
 
 
 def vendor_dashboard():
