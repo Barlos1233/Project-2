@@ -7,14 +7,34 @@
   <body>
     <!-- Show the vendor's own food listings. -->
     <h1>My listings</h1>
+    {% with messages = get_flashed_messages() %}
+      {% for message in messages %}
+        <p>{{ message }}</p>
+      {% endfor %}
+    {% endwith %}
     <!-- Make one card for every listing the app sends to this page. -->
     {% for listing in listings %}
       <article>
         <h2>{{ listing.title }}</h2>
+        <p>Status: {{ statuses[listing.id] }}</p>
         <p>{{ listing.description }}</p>
-        <p>{{ listing.portions }} portions</p>
+        <p>{{ listing.portions - listing.portions_available }} portions reserved</p>
+        <p>{{ listing.portions_available }} portions remaining</p>
         <p>{{ listing.location.name }}</p>
-        <p>{{ listing.pickup_start }} – {{ listing.pickup_end }}</p>
+        <p>{{ listing.pickup_start|campus_time }} – {{ listing.pickup_end|campus_time }}</p>
+        <a href="{{ url_for('listings.listing_details', listing_id=listing.id) }}">
+          View reservations
+        </a>
+        {% if statuses[listing.id] != "cancelled" %}
+          <a href="{{ url_for('listings.edit_listing', listing_id=listing.id) }}">
+            Edit
+          </a>
+          <form method="post"
+                action="{{ url_for('listings.cancel_listing', listing_id=listing.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit">Cancel listing</button>
+          </form>
+        {% endif %}
       </article>
     {% else %}
       <!-- Show this note when the vendor has not posted any listings yet. -->

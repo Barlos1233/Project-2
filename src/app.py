@@ -5,7 +5,7 @@ import click
 from flask import Flask, abort, jsonify, render_template
 from flask_login import current_user, login_required
 from flask_wtf.csrf import CSRFProtect
-from sqlalchemy import text
+from sqlalchemy import inspect, text
 
 from auth.routes import auth_bp
 from extensions import db, login_manager
@@ -42,6 +42,116 @@ def create_app():
     # Make sure the database tables exist before the app starts serving pages.
     with app.app_context():
         db.create_all()
+        listing_columns = {
+            column["name"] for column in inspect(db.engine).get_columns("listings")
+        }
+        if db.engine.dialect.name == "postgresql":
+            # Upgrade older PostgreSQL listing tables without discarding their data.
+            with db.engine.begin() as connection:
+                if "location_id" not in listing_columns:
+                    connection.execute(
+                        text(
+                            "ALTER TABLE listings ADD COLUMN location_id "
+                            "INTEGER REFERENCES locations(id)"
+                        )
+                    )
+                    listing_columns.add("location_id")
+
+                if "pickup_location" in listing_columns:
+                    connection.execute(
+                        text(
+                            "INSERT INTO locations (name) "
+                            "SELECT DISTINCT COALESCE("
+                            "NULLIF(BTRIM(pickup_location), ''), 'Unspecified') "
+                            "FROM listings "
+                            "ON CONFLICT (name) DO NOTHING"
+                        )
+                    )
+                    connection.execute(
+                        text(
+                            "UPDATE listings AS listing "
+                            "SET location_id = location.id "
+                            "FROM locations AS location "
+                            "WHERE listing.location_id IS NULL "
+                            "AND location.name = COALESCE("
+                            "NULLIF(BTRIM(listing.pickup_location), ''), "
+                            "'Unspecified')"
+                        )
+                    )
+                    connection.execute(
+                        text(
+                            "ALTER TABLE listings ALTER COLUMN pickup_location "
+                            "DROP NOT NULL"
+                        )
+                    )
+                else:
+                    connection.execute(
+                        text(
+                            "INSERT INTO locations (name) VALUES ('Unspecified') "
+                            "ON CONFLICT (name) DO NOTHING"
+                        )
+                    )
+                    connection.execute(
+                        text(
+                            "UPDATE listings SET location_id = "
+                            "(SELECT id FROM locations WHERE name = 'Unspecified') "
+                            "WHERE location_id IS NULL"
+                        )
+                    )
+
+                if "portions_available" not in listing_columns:
+                    connection.execute(
+                        text(
+                            "ALTER TABLE listings "
+                            "ADD COLUMN portions_available INTEGER"
+                        )
+                    )
+                    connection.execute(
+                        text(
+                            "UPDATE listings AS listing "
+                            "SET portions_available = GREATEST("
+                            "listing.portions - COALESCE(("
+                            "SELECT SUM(reservation.portions) "
+                            "FROM reservations AS reservation "
+                            "WHERE reservation.listing_id = listing.id "
+                            "AND reservation.status <> 'cancelled'), 0), 0)"
+                        )
+                    )
+                    connection.execute(
+                        text(
+                            "ALTER TABLE listings ALTER COLUMN portions_available "
+                            "SET DEFAULT 0"
+                        )
+                    )
+                    connection.execute(
+                        text(
+                            "ALTER TABLE listings ALTER COLUMN portions_available "
+                            "SET NOT NULL"
+                        )
+                    )
+                    connection.execute(
+                        text(
+                            "ALTER TABLE listings ADD CONSTRAINT "
+                            "ck_available_range CHECK "
+                            "(portions_available BETWEEN 0 AND portions)"
+                        )
+                    )
+
+                connection.execute(
+                    text(
+                        "ALTER TABLE listings ALTER COLUMN location_id SET NOT NULL"
+                    )
+                )
+
+        if "is_cancelled" not in listing_columns:
+            # Add the US5 state to databases created before cancellation support.
+            with db.engine.begin() as connection:
+                connection.execute(
+                    text(
+                        "ALTER TABLE listings "
+                        "ADD COLUMN is_cancelled BOOLEAN NOT NULL DEFAULT FALSE"
+                    )
+                )
 
     @app.cli.command("seed-locations")
     def seed_locations():

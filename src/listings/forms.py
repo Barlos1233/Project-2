@@ -87,9 +87,9 @@ class ReservationForm:
     pass
 
 
-class ListingEditForm:
-    # TODO (US5): Define listing edit fields and reuse the US2 listing validation rules.
-    pass
+class ListingEditForm(ListingForm):
+    # Reuse US2's field rules while giving the edit page its own button label.
+    submit = SubmitField("Save changes")
 
 
 class PickupCodeForm:

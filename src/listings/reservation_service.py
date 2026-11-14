@@ -40,7 +40,11 @@ def reserve(student_id, listing_id, portions):
         .with_for_update()
     ).scalar_one_or_none()
 
-    if listing is None or listing.pickup_end <= datetime.now(timezone.utc):
+    if (
+        listing is None
+        or listing.is_cancelled
+        or listing.pickup_end <= datetime.now(timezone.utc)
+    ):
         db.session.rollback()
         raise ReservationError("This listing is not available.")
 
