@@ -29,7 +29,12 @@ def add_listing(vendor, location, tags, end_offset_hours=2, title="Food"):
 
 @pytest.fixture
 def setup(app, vendor, student, client):
+<<<<<<< HEAD
     union, library = Location(name="Union"), Location(name="Library")
+=======
+    union = Location(name="Test Union")
+    library = Location(name="Test Library")
+>>>>>>> 1889ee2 (US8 version2: bug fix for seed-locations)
     db.session.add_all([union, library])
     db.session.commit()
     add_listing(vendor, union, ["vegan", "gluten-free"], title="Vegan GF Union")
@@ -62,6 +67,16 @@ def test_seed_locations_command_is_idempotent(app):
     }
 
 
+<<<<<<< HEAD
+=======
+def test_locations_are_seeded_on_app_startup(app):
+    from app import CAMPUS_LOCATIONS
+
+    seeded_names = {location.name for location in Location.query.all()}
+    assert seeded_names == set(CAMPUS_LOCATIONS)
+
+
+>>>>>>> 1889ee2 (US8 version2: bug fix for seed-locations)
 def test_no_filters_shows_available_only(client, setup):
     html = listing_html(client.get("/listings/"))
     assert "Expired" not in html and "Veg Union" in html

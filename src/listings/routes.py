@@ -1,15 +1,24 @@
 from datetime import datetime, timezone
 
+<<<<<<< HEAD
 from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
+=======
+from flask import Blueprint, flash, redirect, render_template, request, url_for
+>>>>>>> 1889ee2 (US8 version2: bug fix for seed-locations)
 from flask_login import current_user, login_required
 from sqlalchemy import String, cast
 
 from decorators import vendor_required
 from extensions import db
+<<<<<<< HEAD
 from models import FILTERABLE_TAGS, Listing, Location, Reservation, _as_utc_datetime
 from .forms import ListingForm, PickupCodeForm, to_utc
 from .reservation_service import ReservationError, reserve
 from .reserve_forms import ReserveForm
+=======
+from models import FILTERABLE_TAGS, Listing, Location
+from .forms import ListingForm, to_utc
+>>>>>>> 1889ee2 (US8 version2: bug fix for seed-locations)
 
 
 listings_bp = Blueprint("listings", __name__, url_prefix="/listings")
@@ -34,7 +43,10 @@ def post_listing():
             title=form.title.data.strip(),
             description=form.description.data.strip(),
             portions=form.portions.data,
+<<<<<<< HEAD
             portions_available=form.portions.data,
+=======
+>>>>>>> 1889ee2 (US8 version2: bug fix for seed-locations)
             location_id=form.location_id.data,
             dietary_tags=form.dietary_tags.data,
             pickup_start=to_utc(form.pickup_start.data),
@@ -71,10 +83,15 @@ def browse_listings():
     location_id = request.args.get("location", type=int)
     page = request.args.get("page", 1, type=int)
 
+<<<<<<< HEAD
     query = Listing.query.filter(
         Listing.pickup_end > datetime.now(timezone.utc),
         Listing.portions_available > 0,
     )
+=======
+    query = Listing.query.filter(Listing.pickup_end > datetime.now(timezone.utc))
+    query = query.filter(Listing.portions > 0)
+>>>>>>> 1889ee2 (US8 version2: bug fix for seed-locations)
     if selected_tags:
         query = query.filter(*(_contains_tag(tag) for tag in selected_tags))
     if nut_free:
@@ -94,7 +111,10 @@ def browse_listings():
         selected_tags=selected_tags,
         nut_free=nut_free,
         location_id=location_id,
+<<<<<<< HEAD
         reserve_form=ReserveForm(),
+=======
+>>>>>>> 1889ee2 (US8 version2: bug fix for seed-locations)
     )
 
 

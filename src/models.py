@@ -73,7 +73,10 @@ class Listing(db.Model):
     title = db.Column(db.String(120), nullable=False)
     description = db.Column(db.Text, nullable=False)
     portions = db.Column(db.Integer, nullable=False)
+<<<<<<< HEAD
     portions_available = db.Column(db.Integer, nullable=False, default=0)
+=======
+>>>>>>> 1889ee2 (US8 version2: bug fix for seed-locations)
     location_id = db.Column(
         db.Integer, db.ForeignKey("locations.id"), nullable=False, index=True
     )
@@ -84,6 +87,7 @@ class Listing(db.Model):
 
     vendor = db.relationship("User", backref="listings")
     location = db.relationship("Location")
+<<<<<<< HEAD
     reservations = db.relationship(
         "Reservation", back_populates="listing", cascade="all, delete-orphan"
     )
@@ -92,6 +96,8 @@ class Listing(db.Model):
         super().__init__(*args, **kwargs)
         if self.portions is not None and self.portions_available is None:
             self.portions_available = self.portions
+=======
+>>>>>>> 1889ee2 (US8 version2: bug fix for seed-locations)
 
     # Keep the number of portions and the pickup times within safe limits.
     __table_args__ = (
