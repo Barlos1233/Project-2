@@ -11,10 +11,7 @@ from auth.routes import auth_bp
 from extensions import db, login_manager
 from listings.routes import listings_bp
 from models import Location
-<<<<<<< HEAD
 from reservations.routes import reservations_bp
-=======
->>>>>>> 1889ee2 (US8 version2: bug fix for seed-locations)
 
 
 CAMPUS_LOCATIONS = [
@@ -23,9 +20,7 @@ CAMPUS_LOCATIONS = [
     "Engineering Building",
     "Dorms North",
 ]
-<<<<<<< HEAD
 csrf = CSRFProtect()
-=======
 
 
 def seed_campus_locations():
@@ -33,7 +28,6 @@ def seed_campus_locations():
         if not Location.query.filter_by(name=name).first():
             db.session.add(Location(name=name))
     db.session.commit()
->>>>>>> 1889ee2 (US8 version2: bug fix for seed-locations)
 
 
 def create_app():
@@ -60,14 +54,6 @@ def create_app():
     @app.cli.command("seed-locations")
     def seed_locations():
         seed_campus_locations()
-        click.echo("Locations seeded")
-
-    @app.cli.command("seed-locations")
-    def seed_locations():
-        for name in CAMPUS_LOCATIONS:
-            if not Location.query.filter_by(name=name).first():
-                db.session.add(Location(name=name))
-        db.session.commit()
         click.echo("Locations seeded")
 
     @app.template_filter("campus_time")
