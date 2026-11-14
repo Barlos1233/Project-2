@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Browse Listings</title>
+  </head>
+  <body>
+    <h1>Available Listings</h1>
+
+<<<<<<< HEAD
+    {% with messages = get_flashed_messages() %}
+      {% for message in messages %}
+        <p>{{ message }}</p>
+      {% endfor %}
+    {% endwith %}
+
+    <form method="get" action="{{ url_for('listings.browse_listings') }}">
+      <fieldset>
+        <legend>Dietary needs (must match all)</legend>
+        {% for tag in tag_choices %}
+          <label>
+            <input type="checkbox" name="tags" value="{{ tag }}"
+                   {% if tag in selected_tags %}checked{% endif %}>
+            {{ tag.title() }}
+          </label>
+        {% endfor %}
+        <label>
+          <input type="checkbox" name="nut_free" value="1"
+                 {% if nut_free %}checked{% endif %}>
+          Nut-free only
+        </label>
+      </fieldset>
+
+      <label>Campus location
+        <select name="location">
+          <option value="">Anywhere</option>
+          {% for loc in locations %}
+            <option value="{{ loc.id }}"
+                    {% if loc.id == location_id %}selected{% endif %}>
+              {{ loc.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <button type="submit">Apply</button>
+      <a href="{{ url_for('listings.browse_listings') }}">Clear filters</a>
+    </form>
+
+=======
+    <form method="get" action="{{ url_for('listings.browse_listings') }}">
+      <fieldset>
+        <legend>Dietary needs (must match all)</legend>
+        {% for tag in tag_choices %}
+          <label>
+            <input type="checkbox" name="tags" value="{{ tag }}"
+                   {% if tag in selected_tags %}checked{% endif %}>
+            {{ tag.title() }}
+          </label>
+        {% endfor %}
+        <label>
+          <input type="checkbox" name="nut_free" value="1"
+                 {% if nut_free %}checked{% endif %}>
+          Nut-free only
+        </label>
+      </fieldset>
+
+      <label>Campus location
+        <select name="location">
+          <option value="">Anywhere</option>
+          {% for loc in locations %}
+            <option value="{{ loc.id }}"
+                    {% if loc.id == location_id %}selected{% endif %}>
+              {{ loc.name }}
+            </option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <button type="submit">Apply</button>
+      <a href="{{ url_for('listings.browse_listings') }}">Clear filters</a>
+    </form>
+
+>>>>>>> 1889ee2 (US8 version2: bug fix for seed-locations)
+    <p>{{ pagination.total }} listing{{ '' if pagination.total == 1 else 's' }} match</p>
+
+    {% for listing in pagination.items %}
+      <article>
+<<<<<<< HEAD
+        <h2>{{ listing.title }}</h2>
+        <p>{{ listing.vendor.name }} · {{ listing.location.name }}</p>
+        <p>{{ listing.pickup_start|campus_time }} – {{ listing.pickup_end|campus_time }} ·
+           {{ listing.portions_available }} portions available</p>
+        <p>{{ listing.dietary_tags | join(', ') }}</p>
+        {% if current_user.role == "Student" %}
+          <form method="post" action="{{ url_for('listings.reserve_listing', listing_id=listing.id) }}">
+            {{ reserve_form.hidden_tag() }}
+            <label for="portions-{{ listing.id }}">Portions</label>
+            <select id="portions-{{ listing.id }}" name="portions">
+              <option value="1">1</option>
+              {% if listing.portions_available > 1 %}
+                <option value="2">2</option>
+              {% endif %}
+            </select>
+            <button type="submit">Reserve</button>
+          </form>
+        {% endif %}
+=======
+        <h3>{{ listing.title }}</h3>
+        <p>{{ listing.vendor.name }} · {{ listing.location.name }}</p>
+        <p>{{ listing.pickup_start }} – {{ listing.pickup_end }} ·
+           {{ listing.portions }} portions</p>
+        <p>{{ listing.dietary_tags | join(', ') }}</p>
+>>>>>>> 1889ee2 (US8 version2: bug fix for seed-locations)
+      </article>
+    {% else %}
+      <p>No food matches these filters right now.
+        <a href="{{ url_for('listings.browse_listings') }}">Clear filters</a>
+      </p>
+    {% endfor %}
+
+    {% if pagination.has_prev %}
+      <a href="{{ url_for('listings.browse_listings', page=pagination.prev_num,
+                          tags=selected_tags, location=location_id,
+                          nut_free='1' if nut_free else None) }}">Previous</a>
+    {% endif %}
+    {% if pagination.has_next %}
+      <a href="{{ url_for('listings.browse_listings', page=pagination.next_num,
+                          tags=selected_tags, location=location_id,
+                          nut_free='1' if nut_free else None) }}">Next</a>
+    {% endif %}
+  </body>
+<<<<<<< HEAD
+</html>
+=======
+</html>
+>>>>>>> 1889ee2 (US8 version2: bug fix for seed-locations)

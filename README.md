@@ -11,7 +11,7 @@ Each team designates one member as the **Scrum Master** before Sprint 1 begins a
 The Product Owner role is played by the instructor. The instructor has written the backlog and set the user value of each story; your team decides effort, priority within the rules below, and how the work is split.
 
 ```
-Scrum Master: <student's name>
+Scrum Master: Carlos Viramontes
 ```
 
 # Project Vision
@@ -149,10 +149,10 @@ Justification (one or two sentences: team size, hours available, course load): <
 
 | Sprint | User stories (in order) | Story points planned | Points remaining after sprint | Dependencies checked (Y/N) |
 | --- | --- | --- | --- | --- |
-| Sprint 1 |  |  |  |  |
-| Sprint 2 |  |  |  |  |
-| Sprint 3 |  |  |  |  |
-| **Total** |  |  | — | — |
+| Sprint 1 | US1 -> US2 -> US3 -> US8 | 11 | 24 | Y |
+| Sprint 2 | US4 -> US6 -> US7 | 13 | 11 | Y |
+| Sprint 3 | US5 -> US9 -> US10 | 11 | 0 | Y |
+| **Total** | US1-US10 | 43 | — | — |
 
 # Sprint Boards
 
@@ -190,6 +190,20 @@ docker compose up --build
 ```
 
 Open the app at http://localhost:5000. The `/healthz` endpoint checks the PostgreSQL connection. Docker Compose has local-only development defaults so the app also starts if no `.env` file is present; set your own values in `.env` for local work, and do not commit that file. The default Flask development server and credentials are for development only.
+
+<<<<<<< HEAD
+After the app starts, seed the pickup locations vendors can choose from:
+=======
+The app creates the database tables and seeds the pickup locations vendors can
+choose from automatically on startup. The seed operation is safe to repeat.
+To run it manually when needed:
+>>>>>>> 1889ee2 (US8 version2: bug fix for seed-locations)
+
+```powershell
+docker compose exec web flask --app app seed-locations
+```
+
+The command is safe to run more than once. When running Flask directly from the app directory, use `flask --app app seed-locations`.
 
 The instructor must be able to run the app with a single command from the repository root:
 

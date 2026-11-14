@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Register</title>
+  </head>
+  <body>
+    <!-- Ask the visitor to create an account. -->
+    <h1>Create an account</h1>
+    <!-- Show messages such as an email that is already in use. -->
+    {% with messages = get_flashed_messages() %}
+      {% for message in messages %}
+        <p>{{ message }}</p>
+      {% endfor %}
+    {% endwith %}
+    <!-- Collect the details needed for a new account. -->
+    <form method="post">
+      {{ form.hidden_tag() }}
+      <!-- Show each account question and any note about an invalid answer. -->
+      {% for field in [form.name, form.email, form.password, form.role] %}
+        <p>
+          {{ field.label }}
+          {{ field() }}
+          {% for error in field.errors %}<small>{{ error }}</small>{% endfor %}
+        </p>
+      {% endfor %}
+      {{ form.submit() }}
+    </form>
+    <!-- Give people who already have an account a sign-in link. -->
+    <p>Already registered? <a href="{{ url_for('auth.login') }}">Log in</a></p>
+  </body>
+</html>

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Tell the browser which kind of page this is. -->
+    <meta charset="utf-8">
+    <!-- Show this name in the browser tab. -->
+    <title>Post a listing</title>
+  </head>
+  <body>
+    <!-- US2: This page lets a vendor share extra food. -->
+    <h1>Post a listing</h1>
+    <!-- Show any short messages the app needs the vendor to see. -->
+    {% with messages = get_flashed_messages() %}
+      {% for message in messages %}
+        <p>{{ message }}</p>
+      {% endfor %}
+    {% endwith %}
+    <!-- Send the vendor's answers back to the app when the form is submitted. -->
+    <form method="post">
+      <!-- Add a hidden safety token so the app can check this form came from this page. -->
+      {{ form.hidden_tag() }}
+      <!-- Go through each form field, but leave out the hidden token and send button. -->
+      {% for field in form if field.type not in ("CSRFTokenField", "SubmitField") %}
+        <div>
+          <!-- Show the name and input box for this question. -->
+          {{ field.label }}
+          {{ field() }}
+          <!-- Show a helpful note if the answer needs fixing. -->
+          {% for error in field.errors %}
+            <small>{{ error }}</small>
+          {% endfor %}
+        </div>
+      {% endfor %}
+      <!-- Add the button that sends the completed form. -->
+      {{ form.submit() }}
+    </form>
+  </body>
+</html>

@@ -1,0 +1,26 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CampusEats - Student Home</title>
+</head>
+<body>
+
+<!-- Welcome the signed-in student by name. -->
+<h1>Welcome, {{ user.name }}!</h1>
+<h2>Student Home Page</h2>
+
+<p>You are logged in as a Student.</p>
+
+<!-- Open the page with available food listings. -->
+<p><a href="{{ url_for('listings.browse_listings') }}">Browse Listings</a></p>
+
+<!-- Show a button that lets the student sign out. -->
+<form method="POST" action="{{ url_for('logout') }}">
+    {{ form.hidden_tag() }}
+    {{ form.submit() }}
+</form>
+
+</body>
+</html>

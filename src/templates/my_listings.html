@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>My listings</title>
+  </head>
+  <body>
+    <!-- Show the vendor's own food listings. -->
+    <h1>My listings</h1>
+    <!-- Make one card for every listing the app sends to this page. -->
+    {% for listing in listings %}
+      <article>
+        <h2>{{ listing.title }}</h2>
+        <p>
+            <a href="{{ url_for('listings.confirm_pickup', listing_id=listing.id) }}">
+                Confirm pickup
+            </a>
+        </p>
+        <p>{{ listing.description }}</p>
+        <p>{{ listing.portions }} portions</p>
+        <p>{{ listing.location.name }}</p>
+        <p>{{ listing.pickup_start }} – {{ listing.pickup_end }}</p>
+      </article>
+    {% else %}
+      <!-- Show this note when the vendor has not posted any listings yet. -->
+      <p>You have no listings yet.</p>
+    {% endfor %}
+  </body>
+</html>

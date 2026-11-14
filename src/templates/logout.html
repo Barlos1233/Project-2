@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Log out</title>
+  </head>
+  <body>
+    <!-- Ask the user to confirm signing out. -->
+    <h1>Log out</h1>
+    <form method="post">
+      <!-- Include the form safety token and the sign-out button. -->
+      {{ form.hidden_tag() }}
+      {{ form.submit() }}
+    </form>
+  </body>
+</html>
