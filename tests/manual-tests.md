@@ -35,3 +35,7 @@
 | US6 | 1: My Reservations shows all required details and status | CARLOS | 11/10/26 | PASSED | Reservation rows include title, vendor, location, pickup window, portions, pickup code, and status. |
 | US6 | 2: Active reservation can be cancelled and portions returned | CARLOS | 11/10/26 | PASSED | Cancelling an active reservation updates its status to cancelled and returns the reserved portions to the listing. |
 | US6 | 3: Inactive reservations do not show cancel option | CARLOS | 11/10/26 | PASSED | Reservations no longer active do not display a Cancel button. |
+
+| US10 | 1: Rate a picked-up reservation with 1 to 5 stars and a comment | ABDALBASET | 11/14/26 | PASSED | Rated four picked-up reservations (5, 1, 5 and 3 stars, each with a comment); the rating and comment show on each row of My Reservations. The 300-character limit was not tried by hand. |
+| US10 | 2: Each reservation can be rated once; other statuses cannot be rated | ABDALBASET | 11/14/26 | PASSED | A rated row shows its rating and no form. Cancelled reservations show no Rating form. |
+| US10 | 3: Vendor sees the average rating and comments for each listing | ABDALBASET | 11/14/26 | PASSED | My listings showed "Average rating: 5.0 / 5 (1 rating)" and the comment under the rated listing. |
