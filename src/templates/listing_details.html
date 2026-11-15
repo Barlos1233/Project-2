@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Listing reservations</title>
+  </head>
+  <body>
+    <!-- Show reservation details only to the vendor who owns this listing. -->
+    <h1>Reservations for {{ listing.title }}</h1>
+    <p>{{ listing.portions }} portions posted</p>
+    {% for reservation in reservations %}
+      <article>
+        <h2>{{ reservation.student.name }}</h2>
+        <p>{{ reservation.portions }} portions</p>
+        <p>Status: {{ reservation.status|replace("_", " ") }}</p>
+      </article>
+    {% else %}
+      <p>No students have reserved this listing.</p>
+    {% endfor %}
+    <a href="{{ url_for('listings.my_listings') }}">Back to My Listings</a>
+  </body>
+</html>

@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Edit listing</title>
+  </head>
+  <body>
+    <!-- Reuse the validated listing fields so edits follow the posting rules. -->
+    <h1>Edit {{ listing.title }}</h1>
+    <form method="post">
+      {{ form.hidden_tag() }}
+      {% for field in form if field.type not in ("CSRFTokenField", "SubmitField") %}
+        <div>
+          {{ field.label }}
+          {{ field() }}
+          {% for error in field.errors %}
+            <small>{{ error }}</small>
+          {% endfor %}
+        </div>
+      {% endfor %}
+      {{ form.submit() }}
+    </form>
+    <a href="{{ url_for('listings.my_listings') }}">Back to My Listings</a>
+  </body>
+</html>

@@ -74,6 +74,10 @@ class Listing(db.Model):
     description = db.Column(db.Text, nullable=False)
     portions = db.Column(db.Integer, nullable=False)
     portions_available = db.Column(db.Integer, nullable=False, default=0)
+    # US5: Keep vendor-cancelled listings out of student browsing and reservations.
+    is_cancelled = db.Column(
+        db.Boolean, nullable=False, default=False, server_default=db.false()
+    )
     location_id = db.Column(
         db.Integer, db.ForeignKey("locations.id"), nullable=False, index=True
     )
@@ -193,11 +197,6 @@ Listing.portions_reserved = column_property(
     .correlate_except(Reservation)
     .scalar_subquery()
 )
-
-
-class ListingCancellation:
-    # TODO (US5): Define how a vendor's cancellation state is stored for a listing.
-    pass
 
 
 # US10: A rating is 1 to 5 stars and an optional comment for one picked-up reservation.

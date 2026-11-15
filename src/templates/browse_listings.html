@@ -49,6 +49,7 @@
     <p>{{ pagination.total }} listing{{ '' if pagination.total == 1 else 's' }} match</p>
 
     {% for listing in pagination.items %}
+      <!-- Cancelled vendor listings are excluded before the page is rendered. -->
       <article>
         <h2>{{ listing.title }}</h2>
         <p>{{ listing.vendor.name }} · {{ listing.location.name }}</p>
