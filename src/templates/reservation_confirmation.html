@@ -14,12 +14,12 @@
 
 <p><strong>Food:</strong> {{ reservation.listing.title }}</p>
 <p><strong>Vendor:</strong> {{ reservation.listing.vendor.name }}</p>
-<p><strong>Pickup Location:</strong> {{ reservation.listing.pickup_location }}</p>
+<p><strong>Pickup Location:</strong> {{ reservation.listing.location.name }}</p>
 <p>
     <strong>Pickup Window:</strong>
-    {{ reservation.listing.pickup_start }}
+    {{ reservation.listing.pickup_start | campus_time }}
     -
-    {{ reservation.listing.pickup_end }}
+    {{ reservation.listing.pickup_end | campus_time }}
 </p>
 <p><strong>Portions:</strong> {{ reservation.portions }}</p>
 

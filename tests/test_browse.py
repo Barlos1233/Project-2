@@ -29,7 +29,8 @@ def add_listing(vendor, location, tags, end_offset_hours=2, title="Food"):
 
 @pytest.fixture
 def setup(app, vendor, student, client):
-    union, library = Location(name="Union"), Location(name="Library")
+    union = Location(name="Test Union")
+    library = Location(name="Test Library")
     db.session.add_all([union, library])
     db.session.commit()
     add_listing(vendor, union, ["vegan", "gluten-free"], title="Vegan GF Union")
@@ -60,6 +61,13 @@ def test_seed_locations_command_is_idempotent(app):
         "Engineering Building",
         "Dorms North",
     }
+
+
+def test_locations_are_seeded_on_app_startup(app):
+    from app import CAMPUS_LOCATIONS
+
+    seeded_names = {location.name for location in Location.query.all()}
+    assert seeded_names == set(CAMPUS_LOCATIONS)
 
 
 def test_no_filters_shows_available_only(client, setup):

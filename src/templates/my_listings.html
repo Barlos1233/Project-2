@@ -17,6 +17,11 @@
       <article>
         <h2>{{ listing.title }}</h2>
         <p>Status: {{ statuses[listing.id] }}</p>
+        <p>
+            <a href="{{ url_for('listings.confirm_pickup', listing_id=listing.id) }}">
+                Confirm pickup
+            </a>
+        </p>
         <p>{{ listing.description }}</p>
         <p>{{ listing.portions - listing.portions_available }} portions reserved</p>
         <p>{{ listing.portions_available }} portions remaining</p>

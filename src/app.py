@@ -23,6 +23,13 @@ CAMPUS_LOCATIONS = [
 csrf = CSRFProtect()
 
 
+def seed_campus_locations():
+    for name in CAMPUS_LOCATIONS:
+        if not Location.query.filter_by(name=name).first():
+            db.session.add(Location(name=name))
+    db.session.commit()
+
+
 def create_app():
     # Build the Flask app and read its private settings from the environment.
     app = Flask(__name__)
@@ -84,7 +91,10 @@ def create_app():
                             "DROP NOT NULL"
                         )
                     )
-                else:
+                elif connection.execute(
+                    text("SELECT 1 FROM listings WHERE location_id IS NULL LIMIT 1")
+                ).first():
+                    # Only listings that still have no location need a placeholder.
                     connection.execute(
                         text(
                             "INSERT INTO locations (name) VALUES ('Unspecified') "
@@ -153,12 +163,12 @@ def create_app():
                     )
                 )
 
+        # Keep the pickup locations vendors choose from available on every start.
+        seed_campus_locations()
+
     @app.cli.command("seed-locations")
     def seed_locations():
-        for name in CAMPUS_LOCATIONS:
-            if not Location.query.filter_by(name=name).first():
-                db.session.add(Location(name=name))
-        db.session.commit()
+        seed_campus_locations()
         click.echo("Locations seeded")
 
     @app.template_filter("campus_time")
