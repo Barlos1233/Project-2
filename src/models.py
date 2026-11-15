@@ -106,6 +106,19 @@ class Listing(db.Model):
         # US4: Portions that no student has reserved yet.
         return self.portions - self.portions_reserved
 
+    @property
+    def ratings(self):
+        # US10: Every rating students left for this listing's reservations.
+        return [r.rating for r in self.reservations if r.rating is not None]
+
+    @property
+    def average_rating(self):
+        # US10: Average stars for this listing, or None when nobody rated it yet.
+        ratings = self.ratings
+        if not ratings:
+            return None
+        return sum(rating.stars for rating in ratings) / len(ratings)
+
 # US4: A reservation is one student holding 1 or 2 portions of one listing.
 # The pickup code is what the student shows the vendor at pickup (US7).
 class Reservation(db.Model):
@@ -130,6 +143,11 @@ class Reservation(db.Model):
 
     listing = db.relationship("Listing", back_populates="reservations")
     student = db.relationship("User", backref="reservations")
+    # US10: the one rating a student may leave after pickup (none until they rate).
+    rating = db.relationship(
+        "Rating", back_populates="reservation", uselist=False,
+        cascade="all, delete-orphan",
+    )
 
     __table_args__ = (
         # A student can reserve 1 or 2 portions at a time.
@@ -152,6 +170,11 @@ class Reservation(db.Model):
         ):
             return "no_show"
         return self.status
+
+    @property
+    def can_rate(self):
+        # US10: Only a picked-up reservation that has no rating yet can be rated.
+        return self.status == "picked_up" and self.rating is None
 
     @property
     def can_cancel(self):
@@ -177,6 +200,22 @@ class ListingCancellation:
     pass
 
 
-class Rating:
-    # TODO (US10): Define a one-time rating and optional comment linked to a picked-up reservation.
-    pass
+# US10: A rating is 1 to 5 stars and an optional comment for one picked-up reservation.
+# reservation_id is unique, so the database itself allows only one rating per reservation.
+class Rating(db.Model):
+    __tablename__ = "ratings"
+
+    id = db.Column(db.Integer, primary_key=True)
+    reservation_id = db.Column(
+        db.Integer, db.ForeignKey("reservations.id", ondelete="CASCADE"),
+        nullable=False, unique=True,
+    )
+    stars = db.Column(db.Integer, nullable=False)
+    comment = db.Column(db.String(300), nullable=True)
+    created_at = db.Column(db.DateTime(timezone=True), server_default=db.func.now())
+
+    reservation = db.relationship("Reservation", back_populates="rating")
+
+    __table_args__ = (
+        db.CheckConstraint("stars BETWEEN 1 AND 5", name="ck_rating_stars"),
+    )
