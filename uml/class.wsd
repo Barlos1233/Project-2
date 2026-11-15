@@ -49,6 +49,14 @@ class Reservation {
     +created_at: datetime
 }
 
+class Rating {
+    +id: int
+    +reservation_id: int <<unique>>
+    +stars: int
+    +comment: str
+    +created_at: datetime
+}
+
 class DietaryTag {
     +id: int
     +name: str <<unique>>
@@ -62,6 +70,7 @@ class ListingDietaryTag <<association table>> {
 User "1\nvendor" -- "0..*\nlistings" Listing : posts
 User "1\nstudent" -- "0..*\nreservations" Reservation : makes
 Listing "1" -- "0..*\nreservations" Reservation : has
+Reservation "1" -- "0..1" Rating : rated by
 Listing "1" -- "0..*" ListingDietaryTag
 DietaryTag "1" -- "0..*" ListingDietaryTag
 
@@ -78,6 +87,12 @@ note right of Reservation
   Owner must have role STUDENT
   At most one ACTIVE reservation per student per listing
   ACTIVE becomes NO_SHOW after pickup_end
+end note
+
+note right of Rating
+  stars must be 1..5
+  comment is optional, at most 300 characters
+  Only a PICKED_UP reservation can be rated, once
 end note
 
 @enduml

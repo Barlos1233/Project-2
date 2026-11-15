@@ -20,6 +20,17 @@
         <p>{{ listing.portions }} portions</p>
         <p>{{ listing.location.name }}</p>
         <p>{{ listing.pickup_start }} – {{ listing.pickup_end }}</p>
+        <!-- US10: Show how students rated this listing. -->
+        {% if listing.average_rating is not none %}
+          <p>Average rating: {{ '%.1f' % listing.average_rating }} / 5 ({{ listing.ratings | length }} rating{{ '' if listing.ratings | length == 1 else 's' }})</p>
+          <ul>
+            {% for rating in listing.ratings %}
+              <li>{{ rating.stars }}/5{% if rating.comment %} – {{ rating.comment }}{% endif %}</li>
+            {% endfor %}
+          </ul>
+        {% else %}
+          <p>No ratings yet.</p>
+        {% endif %}
       </article>
     {% else %}
       <!-- Show this note when the vendor has not posted any listings yet. -->

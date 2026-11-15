@@ -16,6 +16,7 @@
       <th>Pickup code</th>
       <th>Status</th>
       <th></th>
+      <th>Rating</th>
     </tr>
   </thead>
   <tbody>
@@ -33,6 +34,26 @@
             <form method="post" action="{{ url_for('reservations.cancel', reservation_id=r.id) }}">
               <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
               <button type="submit" data-action="cancel">Cancel</button>
+            </form>
+          {% endif %}
+        </td>
+        <td>
+          {% if r.rating %}
+            <span data-rating>{{ r.rating.stars }}/5</span>
+            {% if r.rating.comment %}<span> – {{ r.rating.comment }}</span>{% endif %}
+          {% elif r.can_rate %}
+            <form method="post" action="{{ url_for('reservations.rate', reservation_id=r.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <label for="stars-{{ r.id }}">Stars</label>
+              <select id="stars-{{ r.id }}" name="stars" required>
+                <option value="" selected disabled>Choose</option>
+                {% for n in range(1, 6) %}
+                  <option value="{{ n }}">{{ n }}</option>
+                {% endfor %}
+              </select>
+              <label for="comment-{{ r.id }}">Comment (optional)</label>
+              <textarea id="comment-{{ r.id }}" name="comment" maxlength="300" rows="2"></textarea>
+              <button type="submit" data-action="rate">Submit</button>
             </form>
           {% endif %}
         </td>

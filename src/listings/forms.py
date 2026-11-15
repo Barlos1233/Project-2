@@ -12,7 +12,14 @@ from wtforms import (
     TextAreaField,
 )
 from wtforms.fields import DateTimeLocalField
-from wtforms.validators import DataRequired, Length, NumberRange, ValidationError
+from wtforms.validators import (
+    DataRequired,
+    InputRequired,
+    Length,
+    NumberRange,
+    Optional,
+    ValidationError,
+)
 from wtforms.widgets import CheckboxInput, ListWidget
 
 from models import DIETARY_TAGS, Location
@@ -106,6 +113,10 @@ class DashboardDateRangeForm:
     pass
 
 
-class RatingForm:
-    # TODO (US10): Define a 1-5 star rating and optional comment up to 300 characters.
-    pass
+class RatingForm(FlaskForm):
+    # US10: A 1-5 star rating and an optional comment of up to 300 characters.
+    stars = IntegerField(
+        "Stars", validators=[InputRequired(), NumberRange(min=1, max=5)]
+    )
+    comment = TextAreaField("Comment (optional)", validators=[Optional(), Length(max=300)])
+    submit = SubmitField("Submit")
