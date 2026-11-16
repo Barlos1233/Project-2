@@ -196,24 +196,19 @@ Open the app at http://localhost:5000. The `/healthz` endpoint checks the Postgr
 
 
 
-The app creates the database tables and seeds the pickup locations vendors can
-choose from automatically on startup. With the Compose development defaults,
-it also creates a demo vendor, a demo student, and three sample listings. Seeding
-is safe to repeat and can be disabled with `SEED_DEMO_DATA=false`.
+The app creates the database tables and seeds the pickup locations automatically
+on startup. With `SEED_DEMO_DATA=1` (the default), it also creates demo accounts
+and sample listings. See **Demo accounts and sample listings** below for the
+credentials and details. Set `SEED_DEMO_DATA=0` to disable demo seeding.
 
-| Role | Email | Password |
-|---|---|---|
-| Vendor | `vendor@example.test` | `campuseats-demo` |
-| Student | `student@example.test` | `campuseats-demo` |
-
-To run it manually when needed:
-
+To seed only the pickup locations manually, run:
 
 ```powershell
 docker compose exec web flask --app app seed-locations
 ```
 
-The command is safe to run more than once. When running Flask directly from the app directory, use `flask --app app seed-locations`.
+This command is safe to run more than once. When running Flask directly from
+the app directory, use `flask --app app seed-locations`.
 
 The instructor must be able to run the app with a single command from the repository root:
 
