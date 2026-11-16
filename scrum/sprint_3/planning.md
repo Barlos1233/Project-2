@@ -1,10 +1,10 @@
 # Sprint 3 Planning
 
-**Planning date/time:** Not recorded in the repository.
+**Planning date/time:** 11-8-26
 
 **Scrum Master:** Carlos Viramontes
 
-**Other participants:** Not recorded.
+**Other participants:** Full team
 
 ## Goal
 

@@ -1,10 +1,10 @@
 # Sprint 1 Planning
 
-**Planning date:** 2026-10-30 (date of the README change recording the sprint plan)
+**Planning date:** 2026-10-30
 
-**Scrum Master:** Carlos Viramontes (as named in the README)
+**Scrum Master:** Carlos Viramontes
 
-**Other attendees:** Not recorded in the repository.
+**Other attendees:** Full team
 
 ## Goal
 
@@ -30,4 +30,6 @@ The order above satisfies the documented dependencies: US2 follows US1, US3 foll
 
 ## Planning evidence
 
-The README contains this scope and order. The repository does not record the planning meeting's full attendance, capacity rationale, task assignments, or a usable task-board screenshot; those details are not inferred here.
+The README contains this scope and order. The planning record lists the other
+attendees as "Full team" but does not name them. Capacity rationale and task
+assignments are not recorded, and the Sprint 1 board image remains a placeholder.

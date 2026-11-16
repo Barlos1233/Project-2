@@ -1,6 +1,6 @@
 # Sprint 2 Planning
 
-**Planning date/time:** Not recorded in the repository.
+**Planning date/time:** 11-5-26
 
 **Scrum Master:** Carlos Viramontes
 

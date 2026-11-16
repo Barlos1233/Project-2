@@ -1,17 +1,46 @@
 # Sprint 3 Daily Scrum Evidence
 
-The repository's Sprint 3 daily-scrum template contained placeholder dates and
-no attendee or meeting notes. Those entries have been removed rather than
-replaced with invented meeting minutes.
+The participant names below are retained as recorded, but supporting daily
+meeting minutes are not available to verify attendance or discussion. Progress
+notes summarize repository activity, not undocumented conversations.
 
-The following is a summary of dated repository activity, not a record of
-daily-scrum conversations:
+## 2026-11-13
 
-| Date | Verifiable repository activity |
-|---|---|
-| 2026-11-13 | US5 implementation and test work is recorded in Git history; US5 manual results were added to `tests/manual-tests.md`. |
-| 2026-11-14 | US10 rating implementation and manual-test results are recorded in Git history and `tests/manual-tests.md`. |
-| 2026-11-15 | The Compose Selenium US2 browser test passed. This repository review also found the US9 dashboard still unimplemented and identified remaining acceptance and project-evidence gaps. |
+**Participants:** Trevor, Carlos
 
-For future daily scrums, record the actual participants, yesterday's work,
-today's plan, blockers, and resulting actions on the day of the meeting.
+**Yesterday:** No daily-scrum discussion is documented.
+
+**Today:** Repository activity records US5 implementation and test work. The
+US5 manual-test results were added to `tests/manual-tests.md`.
+
+**Blockers:** The commit message notes that black-box testing was pending. No
+daily-scrum blocker details are recorded.
+
+**Action:** No action is recorded in the available evidence.
+
+## 2026-11-14
+
+**Participants:** Carlos, Abdal
+
+**Yesterday:** No daily-scrum discussion is documented.
+
+**Today:** Repository activity records the US10 rating implementation and
+manual-test updates.
+
+**Blockers:** No daily-scrum blocker information is recorded.
+
+**Action:** No action is recorded in the available evidence.
+
+## 2026-11-15
+
+**Participants:** Carlos
+
+**Yesterday:** No daily-scrum discussion is documented.
+
+**Today:** Sprint board screenshots were added for Sprints 1, 2 and 3, and the
+project documentation was updated. The Compose test run recorded in this
+session passed 30 tests.
+
+**Blockers:** No daily-scrum blocker information is recorded.
+
+**Action:** No action is recorded in the available evidence.

@@ -3,7 +3,7 @@
 
 ## 2026-11-09
 
-**Participants:** Carlos Viramontes (Scrum Master), Trevor, Baset.
+**Participants:** Carlos, Trevor, Baset.
 
 **Yesterday:** The team reviewed the US4 reservation implementation and its
 manual-test results.
@@ -20,7 +20,7 @@ listing.
 
 ## 2026-11-10
 
-**Participants:** Carlos Viramontes (Scrum Master), Trevor, Saran.
+**Participants:** Carlos, Trevor, Saran.
 
 **Yesterday:** Trevor continued implementing the student's reservation page
 and cancellation flow.
@@ -35,7 +35,7 @@ already-used, or ineligible pickup codes.
 
 ## 2026-11-11
 
-**Participants:** Carlos Viramontes (Scrum Master), Mason, Baset.
+**Participants:** Carlos, Mason, Baset.
 
 **Yesterday:** The team integrated US6 and reviewed its manual-test results.
 
@@ -49,7 +49,7 @@ conditions in the confirmation flow.
 
 ## 2026-11-12
 
-**Participants:** Carlos Viramontes (Scrum Master), Mason, Trevor.
+**Participants:** Carlos, Mason, Trevor.
 
 **Yesterday:** The team continued US7 implementation and reviewed edge cases
 around pickup codes.
@@ -65,15 +65,15 @@ needed.
 
 ## 2026-11-13
 
-**Participants:** Carlos Viramontes (Scrum Master), Baset, Saran, Mason.
+**Participants:** Carlos , Baset, Saran, Mason.
 
 **Yesterday:** The team integrated US7 pickup confirmation.
 
 **Today:** The team will review Sprint 2's progress, identify untested
 acceptance criteria, and prepare follow-up tasks for the next sprint.
 
-**Blockers:** The Sprint 2 board image is still a placeholder, and the
-repository does not yet include US7 manual-test results.
+**Blockers (recorded at the time):** The board screenshot and US7 manual-test
+results were missing.
 
 **Action:** Carlos will coordinate updating the board evidence and tracking the
 remaining acceptance tests.
