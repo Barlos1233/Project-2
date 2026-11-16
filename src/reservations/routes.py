@@ -30,14 +30,33 @@ def my_reservations():
 @reservations_bp.post("/<int:reservation_id>/cancel")
 @student_required
 def cancel(reservation_id):
-    reservation = (
-        Reservation.query.filter_by(id=reservation_id, student_id=current_user.id)
-        .with_for_update()
+    # Check ownership without loading or locking the reservation yet.
+    reservation_ref = (
+        Reservation.query.with_entities(Reservation.listing_id)
+        .filter_by(id=reservation_id, student_id=current_user.id)
         .first_or_404()
     )
-    listing = Listing.query.filter_by(id=reservation.listing_id).with_for_update().first_or_404()
 
-    if not reservation.can_cancel:
+    # Match vendor cancellation: lock the listing before its reservation.
+    listing = (
+        Listing.query.filter_by(id=reservation_ref.listing_id)
+        .with_for_update()
+        .populate_existing()
+        .first_or_404()
+    )
+    reservation = (
+        Reservation.query.filter_by(
+            id=reservation_id,
+            student_id=current_user.id,
+            listing_id=listing.id,
+        )
+        .with_for_update()
+        .populate_existing()
+        .first_or_404()
+    )
+
+    # Recheck the current state after acquiring both locks.
+    if listing.is_cancelled or not reservation.can_cancel:
         db.session.rollback()
         flash("This reservation can no longer be cancelled.", "error")
         return redirect(url_for("reservations.my_reservations"))

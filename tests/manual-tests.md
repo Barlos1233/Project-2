@@ -39,3 +39,13 @@
 | US10 | 1: Rate a picked-up reservation with 1 to 5 stars and a comment | ABDALBASET | 11/14/26 | PASSED | Rated four picked-up reservations (5, 1, 5 and 3 stars, each with a comment); the rating and comment show on each row of My Reservations. The 300-character limit was not tried by hand. |
 | US10 | 2: Each reservation can be rated once; other statuses cannot be rated | ABDALBASET | 11/14/26 | PASSED | A rated row shows its rating and no form. Cancelled reservations show no Rating form. |
 | US10 | 3: Vendor sees the average rating and comments for each listing | ABDALBASET | 11/14/26 | PASSED | My listings showed "Average rating: 5.0 / 5 (1 rating)" and the comment under the rated listing. |
+| US1/US2/US6 | Additional: Navigation | MASON | 11/15/26 | PASSED | Home redirects and new navigation links work. |
+| US3 | 3: Sort by pickup end | MASON | 11/15/26 | PASSED | Listings ending sooner appear first. |
+| US7 | 3: No-shows displayed | MASON | 11/15/26 | PASSED | Expired reservations show no-show to students and vendors. |
+| US6 | 2: Cancel reservation | MASON | 11/15/26 | PASSED | Cancellation returns portions once. Repeating it does not add extra portions. |
+| US5 | 4: Cancel listing | MASON | 11/15/26 | PASSED | Listing disappears from browsing and active reservations become cancelled. |
+| US5/US6 | Additional: Simultaneous cancellation, vendor first | MASON | 11/15/26 | PASSED | Both requests finish without errors and portions return once. |
+| US5/US6 | Additional: Simultaneous cancellation, student first | MASON | 11/15/26 | PASSED | Both requests finish without errors and portions return once. |
+| US6 | Additional: Cancellation protection | MASON | 11/15/26 | PASSED | Unauthorized users and requests without a CSRF token are rejected. |
+| US6 | Additional: Picked-up reservation | MASON | 11/15/26 | PASSED | Picked-up reservations cannot be cancelled. |
+| US4 | 4: Reserve the last portion simultaneously | MASON | 11/15/26 | PASSED | Only one student succeeds and remaining portions stay at zero. |

@@ -12,7 +12,7 @@
       <article>
         <h2>{{ reservation.student.name }}</h2>
         <p>{{ reservation.portions }} portions</p>
-        <p>Status: {{ reservation.status|replace("_", " ") }}</p>
+        <p>Status: {{ reservation.display_status|replace("_", " ") }}</p>
       </article>
     {% else %}
       <p>No students have reserved this listing.</p>
