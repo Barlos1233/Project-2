@@ -23,6 +23,7 @@ def app(monkeypatch):
     monkeypatch.setenv("SECRET_KEY", "test")
     monkeypatch.setenv("DATABASE_URL", "sqlite://")
     monkeypatch.setenv("CAMPUS_TZ", "UTC")
+    monkeypatch.setenv("SEED_DEMO_DATA", "0")
 
     from models import Listing
 

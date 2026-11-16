@@ -23,6 +23,7 @@ services:
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-campuseats}:${POSTGRES_PASSWORD:-campuseats-dev-password}@db:5432/${POSTGRES_DB:-campuseats}
       SECRET_KEY: ${SECRET_KEY:-local-development-only-change-me}
       CAMPUS_TZ: ${CAMPUS_TZ:-UTC}
+      SEED_DEMO_DATA: ${SEED_DEMO_DATA:-1}
     ports:
       - "5000:5000"
     # Wait until the database says it is healthy.
