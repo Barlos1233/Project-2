@@ -19,7 +19,9 @@ The README's release plan assigns Sprint 2 to US4 (reserve portions), US6 (view 
 | 3 | US7 — Confirm pickup | 5 | US4 |
 | **Total from estimates** |  | **16** |  |
 
-**Plan discrepancy:** The README's Sprint 2 table records 13 points, but the story estimates listed in the backlog total 16. The README also gives 24 points remaining after Sprint 1 and 11 after Sprint 2, and leaves team capacity and its justification blank. The estimates, capacity, and burndown were not reconciled in the repository.
+The corrected README release plan records 16 points for Sprint 2, 29 points
+remaining after Sprint 1, and 13 after Sprint 2. Team capacity and its
+justification still require confirmation.
 
 ## Scope change visible in repository history
 
@@ -33,4 +35,4 @@ The listed order respects the documented dependencies: US6 and US7 follow US4. T
 
 - The README provides the planned stories and order, but not meeting date/time, full attendance, task assignments, team capacity, or capacity justification.
 - The Sprint 2 board image remains placeholder text rather than a dated board screenshot.
-- Confirm with the team whether US4 was formally moved into Sprint 1, reconcile story-point totals, and record the agreed Sprint 2 commitment.
+- Confirm with the team whether US4 was formally moved into Sprint 1 and record the actual burndown.

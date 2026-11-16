@@ -12,7 +12,7 @@ Deliver the first student/vendor workflows for CampusEats: account registration 
 
 ## Sprint commitment
 
-The README's release plan commits to 11 story points and lists 24 points remaining after Sprint 1. Its planned order is:
+The README's corrected release plan commits to 14 story points and lists 29 points remaining after Sprint 1. Its planned order is:
 
 | Order | Story | Points in backlog estimate | Dependency |
 |---|---|---:|---|
@@ -22,7 +22,7 @@ The README's release plan commits to 11 story points and lists 24 points remaini
 | 4 | US8 — Filter listings | 3 | US3 |
 | **Total from estimates** |  | **14** |  |
 
-**Planning discrepancy:** The README release-plan table records 11 points for this scope, but the listed story estimates add up to 14. The team capacity and its justification are also blank in the README. Confirm the intended estimates, sprint commitment, and capacity with the team before using the plan for burndown or velocity reporting.
+The listed story estimates add up to 14. Team capacity and its justification still need confirmation from the team before claiming the commitment fits capacity.
 
 ## Dependencies and completion
 
