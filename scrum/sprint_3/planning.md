@@ -38,4 +38,4 @@ unrecorded planning decisions.
 - Confirm team capacity and actual burndown with the team.
 - Record actual planning decisions and task assignments if a planning meeting
   took place.
-- The Sprint 3 board image is placeholder text, not a board screenshot.
+- A Sprint 3 tracker screenshot is now included in `board.png`; it is a snapshot and does not document board changes throughout the sprint.

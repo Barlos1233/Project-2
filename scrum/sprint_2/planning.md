@@ -34,5 +34,5 @@ The listed order respects the documented dependencies: US6 and US7 follow US4. T
 ## Planning evidence and open items
 
 - The README provides the planned stories and order, but not meeting date/time, full attendance, task assignments, team capacity, or capacity justification.
-- The Sprint 2 board image remains placeholder text rather than a dated board screenshot.
+- A Sprint 2 tracker screenshot is now included in `board.png`; it is a snapshot and does not document board changes throughout the sprint.
 - Confirm with the team whether US4 was formally moved into Sprint 1 and record the actual burndown.

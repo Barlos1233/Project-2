@@ -12,7 +12,7 @@ Sprint 1's retrospective listed the following actions for Sprint 2. Their status
 |---|---|---|
 | Record scope changes when work is pulled between sprints. | Not completed in the release plan. | US4 was pulled forward and implemented on 2026-11-06, but the README still plans it in Sprint 2 and records no revised points or decision. |
 | Capture actual daily-scrum, review, and retrospective dates, attendees, decisions, and blockers. | Not evidenced. | The Sprint 2 templates were blank; repository history cannot establish that these events took place. |
-| Replace the placeholder board image with a dated screenshot and keep the board current. | Not completed. | Sprint 2 `board.png` remains placeholder text. |
+| Replace the placeholder board image with a dated screenshot and keep the board current. | Partially completed. | A sprint-tracker screenshot was added to `board.png`; a single snapshot does not show progress throughout the sprint. |
 | Verify all acceptance criteria in Docker Compose and record the results. | Partially evidenced. | Manual results are recorded for US4 (criteria 1–3; concurrency not run by hand), US6, and retests of US1–US3. No US7 manual results or complete deployed acceptance review are recorded. |
 
 ## What went well
@@ -27,7 +27,7 @@ Sprint 1's retrospective listed the following actions for Sprint 2. Their status
 - The release plan, story-point totals, and capacity have not been reconciled.
 - US4's pull-forward is visible in repository history but not reflected in the planned Sprint 2 scope.
 - US7 has no manual acceptance-test results in the repository.
-- Actual Scrum event notes and a real board screenshot are absent; implementation activity is not a substitute for these artifacts.
+- A single sprint-tracker screenshot does not show how the board changed during the sprint; implementation activity is not a substitute for dated event notes.
 - Full acceptance in the Docker Compose deployment is not established by the available records.
 
 ## Actions for the next sprint
@@ -37,4 +37,4 @@ Sprint 1's retrospective listed the following actions for Sprint 2. Their status
 | Confirm team capacity and actual sprint outcomes, then complete the actual burndown and explain variance. | Team; specific owner not recorded | Before final submission |
 | Record actual planning, daily-scrum, review, and retrospective dates, attendees, decisions, and blockers. | Scrum Master | At each event |
 | Add manual results for every US7 acceptance criterion and complete required regression tests in Docker Compose. | Story owners; specific owner not recorded | Before the next release |
-| Replace the board placeholder with a dated screenshot and maintain the board during the sprint. | Team; specific owner not recorded | During the next sprint |
+| Keep the sprint tracker current and capture progress at multiple points during the sprint. | Team; specific owner not recorded | During the next sprint |
