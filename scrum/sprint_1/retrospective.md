@@ -12,7 +12,7 @@ Participants: Not recorded. This draft is based on repository artifacts, not rec
 ## What could improve
 
 - US4 was pulled forward, but the release plan does not explain the scope change.
-- The Sprint 1 board image is placeholder text, and daily-scrum, planning, and review attendance/meeting records are not present. Repository activity alone cannot establish that these Scrum events took place.
+- A Sprint 1 board screenshot dated 2026-11-03 is now present, but one snapshot does not show progress throughout the sprint. Daily-scrum, planning, and review attendance/meeting records are not present; repository activity alone cannot establish that these Scrum events took place.
 - The available test records do not establish that every committed story passed every acceptance criterion in the Docker Compose deployment.
 
 ## Actions for the next sprint
@@ -22,5 +22,5 @@ Participants: Not recorded. This draft is based on repository artifacts, not rec
 | Confirm team capacity and document actual outcomes in the burndown. | Team; Scrum Master to coordinate | Before final submission |
 | Record scope changes when work is pulled between sprints, including the decision and revised point totals. | Team | During Sprint 2 planning |
 | Capture actual daily-scrum, review, and retrospective dates, attendees, decisions, and blockers when each event occurs. | Scrum Master | Each Scrum event |
-| Replace the placeholder board image with a genuine, dated board screenshot and keep the board current during the sprint. | Team | During Sprint 2 |
+| Capture dated board screenshots at multiple points and keep the board current during the sprint. | Team | During Sprint 2 |
 | Verify all acceptance criteria in the Docker Compose deployment and record test outcomes for each story. | Story owners; Scrum Master to track | Before Sprint 2 review |

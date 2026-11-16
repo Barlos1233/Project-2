@@ -17,9 +17,15 @@ The recorded goal was to deliver registration/login (US1), listing creation (US2
 | US4 — Reserve portions | Reservation implementation and a manual-test entry were added on 2026-11-06. | Work was pulled forward from the README's Sprint 2 plan. Do not count it as a planned Sprint 1 commitment without updating the release plan. |
 | UML design | Class and US4 sequence diagrams are present under `uml/`. | Artifacts are present; review/sign-off is not recorded. |
 
+## Sprint board evidence
+
+The [Sprint 1 board snapshot](board.png) is dated 2026-11-03. It shows US1,
+US2, US3, and US8 as completed at that point, while US4, US5, US6, US7, and
+US10 are marked not started. This single tracker snapshot does not establish
+how the board changed during the sprint.
+
 ## Decisions and follow-up
 
 - The repository does not contain review-meeting minutes, a demo record, or Product Owner acceptance; this summary is based on committed artifacts and test records only.
-- The Sprint 1 board image is placeholder text rather than a board screenshot, so it does not demonstrate board progress.
 - Record whether US4 was deliberately pulled into Sprint 1 and include it in actual burndown results.
 - Confirm each story's full acceptance criteria against the Docker Compose deployment and record the results.

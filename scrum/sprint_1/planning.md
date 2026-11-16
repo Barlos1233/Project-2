@@ -32,4 +32,6 @@ The order above satisfies the documented dependencies: US2 follows US1, US3 foll
 
 The README contains this scope and order. The planning record lists the other
 attendees as "Full team" but does not name them. Capacity rationale and task
-assignments are not recorded, and the Sprint 1 board image remains a placeholder.
+assignments are not recorded. A Sprint 1 tracker screenshot dated 2026-11-03 is
+saved as [board.png](board.png); it is a single progress snapshot, not evidence
+of board changes throughout the sprint.
