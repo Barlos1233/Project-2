@@ -49,3 +49,9 @@
 | US6 | Additional: Cancellation protection | MASON | 11/15/26 | PASSED | Unauthorized users and requests without a CSRF token are rejected. |
 | US6 | Additional: Picked-up reservation | MASON | 11/15/26 | PASSED | Picked-up reservations cannot be cancelled. |
 | US4 | 4: Reserve the last portion simultaneously | MASON | 11/15/26 | PASSED | Only one student succeeds and remaining portions stay at zero. |
+| Deployment | Demo accounts created | MASON | 11/15/26 | PASSED | Demo vendor and student could log in without registering. |
+| Deployment | Sample listings created | MASON | 11/15/26 | PASSED | All three demo listings appeared after fresh startup. |
+| Deployment | Reserve demo food | MASON | 11/15/26 | PASSED | Reserving 2 rice bowl portions showed a pickup code and left 3 portions available. |
+| Deployment | Edit demo listing | MASON | 11/15/26 | PASSED | Vendor could edit and save the demo listing title. |
+| Deployment | Restart without duplicates | MASON | 11/15/26 | PASSED | Restarting kept three demo listings without creating duplicates. |
+| Deployment | Restart preserves changes | MASON | 11/15/26 | PASSED | Edited title, reservation, pickup code, and 3 remaining portions stayed after restarting. |

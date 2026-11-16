@@ -12,7 +12,7 @@ from extensions import db, login_manager
 from listings.routes import listings_bp
 from models import Location
 from reservations.routes import reservations_bp
-
+from seed_data import seed_demo_data
 
 CAMPUS_LOCATIONS = [
     "Student Union",
@@ -37,6 +37,7 @@ def create_app():
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["DATABASE_URL"]
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["CAMPUS_TZ"] = os.environ.get("CAMPUS_TZ", "UTC")
+    app.config["SEED_DEMO_DATA"] = os.environ.get("SEED_DEMO_DATA", "1") == "1"
 
     # Connect the database, sign-in helper, and page groups to this app.
     db.init_app(app)
@@ -165,6 +166,8 @@ def create_app():
 
         # Keep the pickup locations vendors choose from available on every start.
         seed_campus_locations()
+        if app.config["SEED_DEMO_DATA"]:
+            seed_demo_data()
 
     @app.cli.command("seed-locations")
     def seed_locations():
