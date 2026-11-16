@@ -1,6 +1,6 @@
 # Sprint 2 Retrospective
 
-**Date/time:** 11/8
+**Date/time:** 11-10-26
 
 **Participants:** Carlos, Trevor, Mason, Saran, Abdal
 
@@ -11,9 +11,9 @@ Sprint 1's retrospective listed the following actions for Sprint 2. Their status
 | Sprint 1 action | Status | Evidence |
 |---|---|---|
 | Record scope changes when work is pulled between sprints. | Not completed in the release plan. | US4 was pulled forward and implemented on 2026-11-06, but the README still plans it in Sprint 2 and records no revised points or decision. |
-| Capture actual daily-scrum, review, and retrospective dates, attendees, decisions, and blockers. | Not evidenced. | The Sprint 2 templates were blank; repository history cannot establish that these events took place. |
+| Capture actual daily-scrum, review, and retrospective dates, attendees, decisions, and blockers. | Partially evidenced. | Dated Sprint 2 daily-scrum entries are now present. Confirm their meeting dates and notes, and verify the retrospective/review dates against when those events actually occurred. |
 | Replace the placeholder board image with a dated screenshot and keep the board current. | Partially completed. | A sprint-tracker screenshot was added to `board.png`; a single snapshot does not show progress throughout the sprint. |
-| Verify all acceptance criteria in Docker Compose and record the results. | Partially evidenced. | Manual results are recorded for US4 (criteria 1–3; concurrency not run by hand), US6, and retests of US1–US3. No US7 manual results or complete deployed acceptance review are recorded. |
+| Verify all acceptance criteria in Docker Compose and record the results. | Partially evidenced. | Manual results are recorded for US4 (including the concurrency check dated 2026-11-15), US6, US7, and retests of US1–US3. A complete deployed acceptance review and a Sprint 2 retest of US8 are not recorded. |
 
 ## What went well
 
@@ -26,7 +26,7 @@ Sprint 1's retrospective listed the following actions for Sprint 2. Their status
 
 - The release plan, story-point totals, and capacity have not been reconciled.
 - US4's pull-forward is visible in repository history but not reflected in the planned Sprint 2 scope.
-- US7 has no manual acceptance-test results in the repository.
+- US7 manual results were added, but should be checked against every acceptance criterion and kept tied to the deployed app.
 - A single sprint-tracker screenshot does not show how the board changed during the sprint; implementation activity is not a substitute for dated event notes.
 - Full acceptance in the Docker Compose deployment is not established by the available records.
 

@@ -289,20 +289,20 @@ pickup windows are rejected, posts a valid listing, and verifies that a student
 cannot open the vendor-only listing form. It uses Selenium against the
 Compose-hosted Chrome browser and the running Flask/PostgreSQL deployment.
 
-From the repository root, start the app and test browser:
+From the repository root, run the browser test:
 
 ```powershell
-docker compose --profile testing up --build -d
-python -m pip install -r requirements-test.txt
-$env:RUN_BLACKBOX = "1"
-python -m pytest -q tests/test_blackbox_us2.py
+docker compose -p campuseats-blackbox --profile testing run --build --rm test-runner
 ```
 
-The Selenium browser runs in Compose; from inside that browser the app URL is
-`http://web:5000`. `SELENIUM_REMOTE_URL` and `BLACKBOX_BASE_URL` can be
-overridden if the browser or app is exposed at different addresses. The
-black-box test is skipped by the regular pytest run unless
-`RUN_BLACKBOX=1` is set.
+Compose starts an isolated PostgreSQL database, the app, and a Selenium Chrome
+browser. Test accounts and listings are written only to this disposable
+database, not the development database. The test runner installs
+`requirements-test.txt`; after the test, remove the test containers and network:
+
+```powershell
+docker compose -p campuseats-blackbox --profile testing down
+```
 
 # Repository Structure
 

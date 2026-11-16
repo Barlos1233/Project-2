@@ -20,8 +20,8 @@ The README planned US4, US6, and US7 for Sprint 2. US4 was implemented and manua
 
 ## Review decisions and follow-up
 
-- Review-meeting minutes, demo notes, attendee list, and Product Owner feedback are not in the repository; no acceptance decision is inferred.
-- Add and record manual results for all US7 acceptance criteria, including invalid, wrong-vendor, used/cancelled code, and ended-window cases.
+- Review-meeting minutes, demo notes, and Product Owner feedback are not in the repository; the listed attendees and whether they represent complete attendance are not independently verified. No acceptance decision is inferred.
+- Confirm US7 manual results cover all acceptance criteria, including invalid, wrong-vendor, used/cancelled code, and ended-window cases.
 - Record any remaining re-tests and verify acceptance criteria in the Docker Compose deployment before release.
 - Keep the sprint tracker current and capture board progress at multiple points in future sprints.
 
