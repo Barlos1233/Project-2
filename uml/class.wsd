@@ -4,15 +4,23 @@ hide empty members
 skinparam classAttributeIconSize 0
 
 enum UserRole {
-    STUDENT
-    VENDOR
+    Student
+    Vendor
 }
 
 enum ReservationStatus {
-    ACTIVE
-    PICKED_UP
-    CANCELLED
-    NO_SHOW
+    active
+    picked_up
+    cancelled
+    no_show
+}
+
+enum DietaryTag {
+    vegetarian
+    vegan
+    gluten_free
+    halal
+    contains_nuts
 }
 
 class User {
@@ -22,77 +30,75 @@ class User {
     +password_hash: str
     +role: UserRole
     +created_at: datetime
-    +is_active: bool
+}
+
+class Location {
+    +id: int
+    +name: str <<unique>>
 }
 
 class Listing {
     +id: int
-    +vendor_id: int
+    +vendor_id: int <<FK>>
+    +location_id: int <<FK>>
     +title: str
     +description: text
-    +total_portions: int
-    +pickup_location: str
+    +portions: int
+    +portions_available: int
+    +is_cancelled: bool
+    +dietary_tags: DietaryTag[]
     +pickup_start: datetime
     +pickup_end: datetime
-    +is_cancelled: bool
     +created_at: datetime
-    +portions_remaining(): int
+    +portions_reserved: int
+    +portions_remaining: int
 }
 
 class Reservation {
     +id: int
-    +listing_id: int
-    +student_id: int
+    +listing_id: int <<FK>>
+    +student_id: int <<FK>>
     +portions: int
     +pickup_code: str <<unique, 6 characters>>
     +status: ReservationStatus
     +created_at: datetime
+    +display_status: str
+    +can_cancel: bool
 }
 
 class Rating {
     +id: int
-    +reservation_id: int <<unique>>
+    +reservation_id: int <<FK, unique>>
     +stars: int
     +comment: str
     +created_at: datetime
 }
 
-class DietaryTag {
-    +id: int
-    +name: str <<unique>>
-}
-
-class ListingDietaryTag <<association table>> {
-    +listing_id: int <<PK, FK>>
-    +dietary_tag_id: int <<PK, FK>>
-}
-
 User "1\nvendor" -- "0..*\nlistings" Listing : posts
+Location "1" -- "0..*\nlistings" Listing : pickup location
 User "1\nstudent" -- "0..*\nreservations" Reservation : makes
 Listing "1" -- "0..*\nreservations" Reservation : has
-Reservation "1" -- "0..1" Rating : rated by
-Listing "1" -- "0..*" ListingDietaryTag
-DietaryTag "1" -- "0..*" ListingDietaryTag
+Reservation "1" -- "0..1" Rating : receives
+Listing "0..*" -- "0..*" DietaryTag : has
 
 note right of Listing
-  total_portions must be 1..100
-  Owner must have role VENDOR
-  Status is derived from is_cancelled and pickup_end
-  Remaining portions = total_portions minus
-  portions in non-cancelled reservations
+  portions must be 1..100
+  portions_available is decremented under a
+  PostgreSQL row lock when a reservation is made
+  dietary_tags is stored as a PostgreSQL array
+  portions_reserved excludes cancelled reservations
 end note
 
 note right of Reservation
   portions must be 1..2
-  Owner must have role STUDENT
-  At most one ACTIVE reservation per student per listing
-  ACTIVE becomes NO_SHOW after pickup_end
+  At most one active reservation per student per listing
+  An active reservation displays as no_show after pickup_end
 end note
 
 note right of Rating
   stars must be 1..5
   comment is optional, at most 300 characters
-  Only a PICKED_UP reservation can be rated, once
+  Only a picked_up reservation can be rated, once
 end note
 
 @enduml

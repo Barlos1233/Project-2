@@ -108,11 +108,6 @@ class PickupCodeForm(FlaskForm):
     submit = SubmitField("Confirm pickup")
 
 
-class DashboardDateRangeForm:
-    # TODO (US9): Define and validate a dashboard date range.
-    pass
-
-
 class RatingForm(FlaskForm):
     # US10: A 1-5 star rating and an optional comment of up to 300 characters.
     stars = IntegerField(

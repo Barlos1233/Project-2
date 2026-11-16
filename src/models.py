@@ -160,7 +160,6 @@ class Reservation(db.Model):
         db.Index(
             "uq_one_active_reservation", "listing_id", "student_id",
             unique=True, postgresql_where=db.text("status = 'active'"),
-            sqlite_where=db.text("status = 'active'"),
         ),
     )
 

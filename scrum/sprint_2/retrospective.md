@@ -10,7 +10,6 @@ Sprint 1's retrospective listed the following actions for Sprint 2. Their status
 
 | Sprint 1 action | Status | Evidence |
 |---|---|---|
-| Reconcile story estimates, Sprint 1's point total, and capacity; update the release plan and burndown. | Not completed in the README. | Sprint 1 still lists 11 points, although its story estimates total 14; the team-capacity fields remain placeholders. |
 | Record scope changes when work is pulled between sprints. | Not completed in the release plan. | US4 was pulled forward and implemented on 2026-11-06, but the README still plans it in Sprint 2 and records no revised points or decision. |
 | Capture actual daily-scrum, review, and retrospective dates, attendees, decisions, and blockers. | Not evidenced. | The Sprint 2 templates were blank; repository history cannot establish that these events took place. |
 | Replace the placeholder board image with a dated screenshot and keep the board current. | Not completed. | Sprint 2 `board.png` remains placeholder text. |
@@ -35,7 +34,7 @@ Sprint 1's retrospective listed the following actions for Sprint 2. Their status
 
 | Action | Owner | Due |
 |---|---|---|
-| Reconcile remaining backlog points, team capacity, release scope, and burndown. | Team; specific owner not recorded | Before next sprint planning |
+| Confirm team capacity and actual sprint outcomes, then complete the actual burndown and explain variance. | Team; specific owner not recorded | Before final submission |
 | Record actual planning, daily-scrum, review, and retrospective dates, attendees, decisions, and blockers. | Scrum Master | At each event |
 | Add manual results for every US7 acceptance criterion and complete required regression tests in Docker Compose. | Story owners; specific owner not recorded | Before the next release |
 | Replace the board placeholder with a dated screenshot and maintain the board during the sprint. | Team; specific owner not recorded | During the next sprint |

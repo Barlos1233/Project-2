@@ -142,17 +142,19 @@ Before writing any code, split the backlog across the three sprints and record i
 * Planned burndown: list the story points remaining at the start and after each planned sprint.
 
 ```
-Team capacity (story points per sprint): <your team's capacity>
+Team capacity (story points per sprint): <confirm with the team>
 
-Justification (one or two sentences: team size, hours available, course load): <justification>
+Justification (one or two sentences: team size, hours available, course load): <confirm with the team>
 ```
 
 | Sprint | User stories (in order) | Story points planned | Points remaining after sprint | Dependencies checked (Y/N) |
 | --- | --- | --- | --- | --- |
-| Sprint 1 | US1 -> US2 -> US3 -> US8 | 11 | 24 | Y |
-| Sprint 2 | US4 -> US6 -> US7 | 13 | 11 | Y |
-| Sprint 3 | US5 -> US9 -> US10 | 11 | 0 | Y |
-| **Total** | US1-US10 | 43 | — | — |
+| Sprint 1 | US1 -> US2 -> US3 -> US8 | 14 | 29 | Y |
+| Sprint 2 | US4 -> US6 -> US7 | 16 | 13 | Y |
+| Sprint 3 | US5 -> US10 | 8 | 5 | Y |
+| **Total planned** | US1-US8, US10 | 38 | — | — |
+
+
 
 # Sprint Boards
 
@@ -195,7 +197,15 @@ Open the app at http://localhost:5000. The `/healthz` endpoint checks the Postgr
 
 
 The app creates the database tables and seeds the pickup locations vendors can
-choose from automatically on startup. The seed operation is safe to repeat.
+choose from automatically on startup. With the Compose development defaults,
+it also creates a demo vendor, a demo student, and three sample listings. Seeding
+is safe to repeat and can be disabled with `SEED_DEMO_DATA=false`.
+
+| Role | Email | Password |
+|---|---|---|
+| Vendor | `vendor@example.test` | `campuseats-demo` |
+| Student | `student@example.test` | `campuseats-demo` |
+
 To run it manually when needed:
 
 
@@ -240,6 +250,28 @@ Write one automated black box test with Selenium for one user story of your choi
 | --- | --- | --- | --- | --- | --- |
 | US1 | 2: duplicate email rejected | Name | 99/99/26 | passed |  |
 | ... | ... | ... | ... | ... | ... |
+
+### Selenium black-box test
+
+The US2 browser test registers a vendor through the website, checks that invalid
+pickup windows are rejected, posts a valid listing, and verifies that a student
+cannot open the vendor-only listing form. It uses Selenium against the
+Compose-hosted Chrome browser and the running Flask/PostgreSQL deployment.
+
+From the repository root, start the app and test browser:
+
+```powershell
+docker compose --profile testing up --build -d
+python -m pip install -r requirements-test.txt
+$env:RUN_BLACKBOX = "1"
+python -m pytest -q tests/test_blackbox_us2.py
+```
+
+The Selenium browser runs in Compose; from inside that browser the app URL is
+`http://web:5000`. `SELENIUM_REMOTE_URL` and `BLACKBOX_BASE_URL` can be
+overridden if the browser or app is exposed at different addresses. The
+black-box test is skipped by the regular pytest run unless
+`RUN_BLACKBOX=1` is set.
 
 # Repository Structure
 
