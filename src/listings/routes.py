@@ -104,7 +104,7 @@ def browse_listings():
     if location_id:
         query = query.filter(Listing.location_id == location_id)
 
-    pagination = query.order_by(Listing.pickup_start).paginate(
+    pagination = query.order_by(Listing.pickup_end, Listing.id).paginate(
         page=page, per_page=12, error_out=False
     )
 

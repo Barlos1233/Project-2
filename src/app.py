@@ -2,7 +2,7 @@ import os
 from zoneinfo import ZoneInfo
 
 import click
-from flask import Flask, abort, jsonify, render_template
+from flask import Flask, abort, jsonify, redirect, render_template, url_for
 from flask_login import current_user, login_required
 from flask_wtf.csrf import CSRFProtect
 from sqlalchemy import inspect, text
@@ -202,8 +202,15 @@ def create_app():
 
     @app.get("/")
     def index():
-        # Tell a visitor that the app is running.
-        return jsonify(name="CampusEats", status="running")
+        if not current_user.is_authenticated:
+            return redirect(url_for("login"))
+
+        home = (
+            "vendor_home"
+            if current_user.role == "Vendor"
+            else "student_home"
+        )
+        return redirect(url_for(home))
 
     @app.get("/healthz")
     def health():
