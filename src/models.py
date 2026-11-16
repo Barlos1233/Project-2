@@ -73,10 +73,11 @@ class Listing(db.Model):
     title = db.Column(db.String(120), nullable=False)
     description = db.Column(db.Text, nullable=False)
     portions = db.Column(db.Integer, nullable=False)
-<<<<<<< HEAD
     portions_available = db.Column(db.Integer, nullable=False, default=0)
-=======
->>>>>>> 1889ee2 (US8 version2: bug fix for seed-locations)
+    # US5: Keep vendor-cancelled listings out of student browsing and reservations.
+    is_cancelled = db.Column(
+        db.Boolean, nullable=False, default=False, server_default=db.false()
+    )
     location_id = db.Column(
         db.Integer, db.ForeignKey("locations.id"), nullable=False, index=True
     )
@@ -87,7 +88,6 @@ class Listing(db.Model):
 
     vendor = db.relationship("User", backref="listings")
     location = db.relationship("Location")
-<<<<<<< HEAD
     reservations = db.relationship(
         "Reservation", back_populates="listing", cascade="all, delete-orphan"
     )
@@ -96,8 +96,6 @@ class Listing(db.Model):
         super().__init__(*args, **kwargs)
         if self.portions is not None and self.portions_available is None:
             self.portions_available = self.portions
-=======
->>>>>>> 1889ee2 (US8 version2: bug fix for seed-locations)
 
     # Keep the number of portions and the pickup times within safe limits.
     __table_args__ = (
@@ -111,6 +109,19 @@ class Listing(db.Model):
     def portions_remaining(self):
         # US4: Portions that no student has reserved yet.
         return self.portions - self.portions_reserved
+
+    @property
+    def ratings(self):
+        # US10: Every rating students left for this listing's reservations.
+        return [r.rating for r in self.reservations if r.rating is not None]
+
+    @property
+    def average_rating(self):
+        # US10: Average stars for this listing, or None when nobody rated it yet.
+        ratings = self.ratings
+        if not ratings:
+            return None
+        return sum(rating.stars for rating in ratings) / len(ratings)
 
 # US4: A reservation is one student holding 1 or 2 portions of one listing.
 # The pickup code is what the student shows the vendor at pickup (US7).
@@ -136,6 +147,11 @@ class Reservation(db.Model):
 
     listing = db.relationship("Listing", back_populates="reservations")
     student = db.relationship("User", backref="reservations")
+    # US10: the one rating a student may leave after pickup (none until they rate).
+    rating = db.relationship(
+        "Rating", back_populates="reservation", uselist=False,
+        cascade="all, delete-orphan",
+    )
 
     __table_args__ = (
         # A student can reserve 1 or 2 portions at a time.
@@ -144,7 +160,6 @@ class Reservation(db.Model):
         db.Index(
             "uq_one_active_reservation", "listing_id", "student_id",
             unique=True, postgresql_where=db.text("status = 'active'"),
-            sqlite_where=db.text("status = 'active'"),
         ),
     )
 
@@ -158,6 +173,11 @@ class Reservation(db.Model):
         ):
             return "no_show"
         return self.status
+
+    @property
+    def can_rate(self):
+        # US10: Only a picked-up reservation that has no rating yet can be rated.
+        return self.status == "picked_up" and self.rating is None
 
     @property
     def can_cancel(self):
@@ -178,11 +198,22 @@ Listing.portions_reserved = column_property(
 )
 
 
-class ListingCancellation:
-    # TODO (US5): Define how a vendor's cancellation state is stored for a listing.
-    pass
+# US10: A rating is 1 to 5 stars and an optional comment for one picked-up reservation.
+# reservation_id is unique, so the database itself allows only one rating per reservation.
+class Rating(db.Model):
+    __tablename__ = "ratings"
 
+    id = db.Column(db.Integer, primary_key=True)
+    reservation_id = db.Column(
+        db.Integer, db.ForeignKey("reservations.id", ondelete="CASCADE"),
+        nullable=False, unique=True,
+    )
+    stars = db.Column(db.Integer, nullable=False)
+    comment = db.Column(db.String(300), nullable=True)
+    created_at = db.Column(db.DateTime(timezone=True), server_default=db.func.now())
 
-class Rating:
-    # TODO (US10): Define a one-time rating and optional comment linked to a picked-up reservation.
-    pass
+    reservation = db.relationship("Reservation", back_populates="rating")
+
+    __table_args__ = (
+        db.CheckConstraint("stars BETWEEN 1 AND 5", name="ck_rating_stars"),
+    )

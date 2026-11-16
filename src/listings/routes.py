@@ -1,24 +1,16 @@
 from datetime import datetime, timezone
 
-<<<<<<< HEAD
 from flask import Blueprint, abort, flash, redirect, render_template, request, url_for
-=======
-from flask import Blueprint, flash, redirect, render_template, request, url_for
->>>>>>> 1889ee2 (US8 version2: bug fix for seed-locations)
 from flask_login import current_user, login_required
 from sqlalchemy import String, cast
+from sqlalchemy.orm import joinedload
 
 from decorators import vendor_required
 from extensions import db
-<<<<<<< HEAD
 from models import FILTERABLE_TAGS, Listing, Location, Reservation, _as_utc_datetime
-from .forms import ListingForm, PickupCodeForm, to_utc
+from .forms import ListingEditForm, ListingForm, PickupCodeForm, campus_tz, to_utc
 from .reservation_service import ReservationError, reserve
 from .reserve_forms import ReserveForm
-=======
-from models import FILTERABLE_TAGS, Listing, Location
-from .forms import ListingForm, to_utc
->>>>>>> 1889ee2 (US8 version2: bug fix for seed-locations)
 
 
 listings_bp = Blueprint("listings", __name__, url_prefix="/listings")
@@ -28,6 +20,13 @@ def _contains_tag(tag):
     if db.session.get_bind().dialect.name == "sqlite":
         return cast(Listing.dietary_tags, String).like(f'%"{tag}"%')
     return Listing.dietary_tags.contains([tag])
+
+
+def _as_utc(value):
+    # SQLite returns naive datetimes; treat them as UTC like the PostgreSQL values.
+    if value.tzinfo is None:
+        return value.replace(tzinfo=timezone.utc)
+    return value.astimezone(timezone.utc)
 
 
 @listings_bp.route("/new", methods=["GET", "POST"])
@@ -43,10 +42,7 @@ def post_listing():
             title=form.title.data.strip(),
             description=form.description.data.strip(),
             portions=form.portions.data,
-<<<<<<< HEAD
             portions_available=form.portions.data,
-=======
->>>>>>> 1889ee2 (US8 version2: bug fix for seed-locations)
             location_id=form.location_id.data,
             dietary_tags=form.dietary_tags.data,
             pickup_start=to_utc(form.pickup_start.data),
@@ -62,15 +58,28 @@ def post_listing():
 @listings_bp.get("/mine")
 @vendor_required
 def my_listings():
-    # US5: Existing starting point for the vendor's listing-management page.
-    # TODO (US5): Show status and reservation counts; add edit, cancel, and reservation details.
-    # Find this vendor's listings and show the newest ones first.
+    # Show only this vendor's listings, with locations ready for the template.
     listings = (
         Listing.query.filter_by(vendor_id=current_user.id)
+        .options(joinedload(Listing.location))
         .order_by(Listing.created_at.desc())
         .all()
     )
-    return render_template("my_listings.html", listings=listings)
+    # Compute the visible status from cancellation and the listing's pickup end.
+    now = datetime.now(timezone.utc)
+    statuses = {
+        listing.id: (
+            "cancelled"
+            if listing.is_cancelled
+            else "ended"
+            if _as_utc(listing.pickup_end) <= now
+            else "active"
+        )
+        for listing in listings
+    }
+    return render_template(
+        "my_listings.html", listings=listings, statuses=statuses
+    )
 
 
 @listings_bp.get("/")
@@ -83,15 +92,11 @@ def browse_listings():
     location_id = request.args.get("location", type=int)
     page = request.args.get("page", 1, type=int)
 
-<<<<<<< HEAD
     query = Listing.query.filter(
         Listing.pickup_end > datetime.now(timezone.utc),
         Listing.portions_available > 0,
+        Listing.is_cancelled.is_(False),
     )
-=======
-    query = Listing.query.filter(Listing.pickup_end > datetime.now(timezone.utc))
-    query = query.filter(Listing.portions > 0)
->>>>>>> 1889ee2 (US8 version2: bug fix for seed-locations)
     if selected_tags:
         query = query.filter(*(_contains_tag(tag) for tag in selected_tags))
     if nut_free:
@@ -99,7 +104,7 @@ def browse_listings():
     if location_id:
         query = query.filter(Listing.location_id == location_id)
 
-    pagination = query.order_by(Listing.pickup_start).paginate(
+    pagination = query.order_by(Listing.pickup_end, Listing.id).paginate(
         page=page, per_page=12, error_out=False
     )
 
@@ -111,10 +116,7 @@ def browse_listings():
         selected_tags=selected_tags,
         nut_free=nut_free,
         location_id=location_id,
-<<<<<<< HEAD
         reserve_form=ReserveForm(),
-=======
->>>>>>> 1889ee2 (US8 version2: bug fix for seed-locations)
     )
 
 
@@ -139,19 +141,98 @@ def reserve_listing(listing_id):
     return render_template("reservation_confirmation.html", reservation=reservation)
 
 
+@listings_bp.route("/<int:listing_id>/edit", methods=["GET", "POST"])
+@vendor_required
 def edit_listing(listing_id):
-    # TODO (US5): Edit a vendor-owned listing and prevent portions dropping below the reserved count.
-    pass
+    # Lock saves against concurrent reservations; ownership is part of the lookup.
+    listing_query = Listing.query.filter_by(
+        id=listing_id, vendor_id=current_user.id
+    )
+    if request.method == "POST":
+        listing_query = listing_query.with_for_update()
+    listing = listing_query.first_or_404()
+    if listing.is_cancelled:
+        flash("A cancelled listing cannot be edited.", "error")
+        return redirect(url_for("listings.my_listings"))
+
+    form = ListingEditForm(obj=listing)
+    if request.method == "GET":
+        # Date/time inputs use campus-local time while the database stores UTC.
+        for field in (form.pickup_start, form.pickup_end):
+            stored_time = getattr(listing, field.name)
+            if stored_time.tzinfo is None:
+                stored_time = stored_time.replace(tzinfo=timezone.utc)
+            field.data = stored_time.astimezone(campus_tz()).replace(tzinfo=None)
+
+    if form.validate_on_submit():
+        reserved = listing.portions_reserved
+        if form.portions.data < reserved:
+            form.portions.errors.append(
+                f"Portions cannot be less than the {reserved} already reserved."
+            )
+        else:
+            # Keep available portions aligned with the edited total and reservations.
+            listing.title = form.title.data.strip()
+            listing.description = form.description.data.strip()
+            listing.portions = form.portions.data
+            listing.portions_available = form.portions.data - reserved
+            listing.location_id = form.location_id.data
+            listing.dietary_tags = form.dietary_tags.data
+            listing.pickup_start = to_utc(form.pickup_start.data)
+            listing.pickup_end = to_utc(form.pickup_end.data)
+            db.session.commit()
+            flash("Listing updated.", "success")
+            return redirect(url_for("listings.my_listings"))
+
+    return render_template("edit_listing.html", form=form, listing=listing)
 
 
+@listings_bp.post("/<int:listing_id>/cancel")
+@vendor_required
 def cancel_listing(listing_id):
-    # TODO (US5): Cancel a vendor-owned listing and its active reservations.
-    pass
+    # Lock the listing so a concurrent reservation cannot slip in during cancellation.
+    listing = (
+        Listing.query.filter_by(id=listing_id, vendor_id=current_user.id)
+        .with_for_update()
+        .first_or_404()
+    )
+    if listing.is_cancelled:
+        flash("This listing is already cancelled.", "error")
+        return redirect(url_for("listings.my_listings"))
+
+    active_reservations = (
+        Reservation.query.filter_by(listing_id=listing.id, status="active")
+        .with_for_update()
+        .all()
+    )
+    # Cancel active holds and return their portions before hiding the listing.
+    listing.portions_available += sum(
+        reservation.portions for reservation in active_reservations
+    )
+    for reservation in active_reservations:
+        reservation.status = "cancelled"
+    listing.is_cancelled = True
+    db.session.commit()
+    flash("Listing cancelled.", "success")
+    return redirect(url_for("listings.my_listings"))
 
 
+@listings_bp.get("/<int:listing_id>")
+@vendor_required
 def listing_details(listing_id):
-    # TODO (US5): Show reservation names and portions for a vendor-owned listing.
-    pass
+    # Load student identities with reservations, but only for the owning vendor.
+    listing = Listing.query.filter_by(
+        id=listing_id, vendor_id=current_user.id
+    ).first_or_404()
+    reservations = (
+        Reservation.query.filter_by(listing_id=listing.id)
+        .options(joinedload(Reservation.student))
+        .order_by(Reservation.created_at)
+        .all()
+    )
+    return render_template(
+        "listing_details.html", listing=listing, reservations=reservations
+    )
 
 
 def my_reservations():

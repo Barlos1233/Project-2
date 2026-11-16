@@ -4,7 +4,7 @@
 
 ## 2026-11-03
 
-**Participants:** Not recorded. Repository contributors active this date include Trevor (`trevor526`), Saran (`Saran-Sukumar`), and Carlos (`Barlos` / `Barlos1233`).
+**Participants:** Carlos, Saran, Trevor. Repository contributors active this date include Trevor (`trevor526`), Saran (`Saran-Sukumar`), and Carlos (`Barlos` / `Barlos1233`).
 
 **Progress visible in the repository:** US2 listing work and US3 browsing work were committed. The US1 authentication pull request was merged, followed by integration and model fixes.
 
@@ -14,7 +14,7 @@
 
 ## 2026-11-04
 
-**Participants:** Not recorded. Repository activity includes Saran (`Saran-Sukumar`) and Carlos (`Barlos`).
+**Participants:** Carlos, Saran . Repository activity includes Saran (`Saran-Sukumar`) and Carlos (`Barlos`).
 
 **Progress visible in the repository:** US3 browsing work continued, and the student home page was linked to the listings route.
 
@@ -24,7 +24,7 @@
 
 ## 2026-11-05
 
-**Participants:** Not recorded. Repository contributors active this date include Trevor (`trevor526`) and Mason (Mason Burrill).
+**Participants:** Trevor, Mason. Repository contributors active this date include Trevor (`trevor526`) and Mason (Mason Burrill).
 
 **Progress visible in the repository:** US8 dietary-tag and location filters were implemented and merged. The manual-test file records passing checks for dietary tags, location/combined filters, clearing filters, and a no-match case.
 
@@ -34,7 +34,7 @@
 
 ## 2026-11-06
 
-**Participants:** Not recorded. Repository activity includes Baset (`baset` / `bbaaset`).
+**Participants:** Abdal, Carlos. Repository activity includes Baset (`baset` / `bbaaset`).
 
 **Progress visible in the repository:** US4 reservation work was committed and merged, with manual-test results added. US4 was planned for Sprint 2 in the README, so this is evidence of work pulled forward, not a change to the recorded Sprint 1 commitment.
 

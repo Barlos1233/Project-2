@@ -2,20 +2,17 @@ import os
 from zoneinfo import ZoneInfo
 
 import click
-from flask import Flask, abort, jsonify, render_template
+from flask import Flask, abort, jsonify, redirect, render_template, url_for
 from flask_login import current_user, login_required
 from flask_wtf.csrf import CSRFProtect
-from sqlalchemy import text
+from sqlalchemy import inspect, text
 
 from auth.routes import auth_bp
 from extensions import db, login_manager
 from listings.routes import listings_bp
 from models import Location
-<<<<<<< HEAD
 from reservations.routes import reservations_bp
-=======
->>>>>>> 1889ee2 (US8 version2: bug fix for seed-locations)
-
+from seed_data import seed_demo_data
 
 CAMPUS_LOCATIONS = [
     "Student Union",
@@ -23,9 +20,7 @@ CAMPUS_LOCATIONS = [
     "Engineering Building",
     "Dorms North",
 ]
-<<<<<<< HEAD
 csrf = CSRFProtect()
-=======
 
 
 def seed_campus_locations():
@@ -33,7 +28,6 @@ def seed_campus_locations():
         if not Location.query.filter_by(name=name).first():
             db.session.add(Location(name=name))
     db.session.commit()
->>>>>>> 1889ee2 (US8 version2: bug fix for seed-locations)
 
 
 def create_app():
@@ -43,6 +37,7 @@ def create_app():
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["DATABASE_URL"]
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["CAMPUS_TZ"] = os.environ.get("CAMPUS_TZ", "UTC")
+    app.config["SEED_DEMO_DATA"] = os.environ.get("SEED_DEMO_DATA", "1") == "1"
 
     # Connect the database, sign-in helper, and page groups to this app.
     db.init_app(app)
@@ -55,19 +50,128 @@ def create_app():
     # Make sure the database tables exist before the app starts serving pages.
     with app.app_context():
         db.create_all()
+        listing_columns = {
+            column["name"] for column in inspect(db.engine).get_columns("listings")
+        }
+        if db.engine.dialect.name == "postgresql":
+            # Upgrade older PostgreSQL listing tables without discarding their data.
+            with db.engine.begin() as connection:
+                if "location_id" not in listing_columns:
+                    connection.execute(
+                        text(
+                            "ALTER TABLE listings ADD COLUMN location_id "
+                            "INTEGER REFERENCES locations(id)"
+                        )
+                    )
+                    listing_columns.add("location_id")
+
+                if "pickup_location" in listing_columns:
+                    connection.execute(
+                        text(
+                            "INSERT INTO locations (name) "
+                            "SELECT DISTINCT COALESCE("
+                            "NULLIF(BTRIM(pickup_location), ''), 'Unspecified') "
+                            "FROM listings "
+                            "ON CONFLICT (name) DO NOTHING"
+                        )
+                    )
+                    connection.execute(
+                        text(
+                            "UPDATE listings AS listing "
+                            "SET location_id = location.id "
+                            "FROM locations AS location "
+                            "WHERE listing.location_id IS NULL "
+                            "AND location.name = COALESCE("
+                            "NULLIF(BTRIM(listing.pickup_location), ''), "
+                            "'Unspecified')"
+                        )
+                    )
+                    connection.execute(
+                        text(
+                            "ALTER TABLE listings ALTER COLUMN pickup_location "
+                            "DROP NOT NULL"
+                        )
+                    )
+                elif connection.execute(
+                    text("SELECT 1 FROM listings WHERE location_id IS NULL LIMIT 1")
+                ).first():
+                    # Only listings that still have no location need a placeholder.
+                    connection.execute(
+                        text(
+                            "INSERT INTO locations (name) VALUES ('Unspecified') "
+                            "ON CONFLICT (name) DO NOTHING"
+                        )
+                    )
+                    connection.execute(
+                        text(
+                            "UPDATE listings SET location_id = "
+                            "(SELECT id FROM locations WHERE name = 'Unspecified') "
+                            "WHERE location_id IS NULL"
+                        )
+                    )
+
+                if "portions_available" not in listing_columns:
+                    connection.execute(
+                        text(
+                            "ALTER TABLE listings "
+                            "ADD COLUMN portions_available INTEGER"
+                        )
+                    )
+                    connection.execute(
+                        text(
+                            "UPDATE listings AS listing "
+                            "SET portions_available = GREATEST("
+                            "listing.portions - COALESCE(("
+                            "SELECT SUM(reservation.portions) "
+                            "FROM reservations AS reservation "
+                            "WHERE reservation.listing_id = listing.id "
+                            "AND reservation.status <> 'cancelled'), 0), 0)"
+                        )
+                    )
+                    connection.execute(
+                        text(
+                            "ALTER TABLE listings ALTER COLUMN portions_available "
+                            "SET DEFAULT 0"
+                        )
+                    )
+                    connection.execute(
+                        text(
+                            "ALTER TABLE listings ALTER COLUMN portions_available "
+                            "SET NOT NULL"
+                        )
+                    )
+                    connection.execute(
+                        text(
+                            "ALTER TABLE listings ADD CONSTRAINT "
+                            "ck_available_range CHECK "
+                            "(portions_available BETWEEN 0 AND portions)"
+                        )
+                    )
+
+                connection.execute(
+                    text(
+                        "ALTER TABLE listings ALTER COLUMN location_id SET NOT NULL"
+                    )
+                )
+
+        if "is_cancelled" not in listing_columns:
+            # Add the US5 state to databases created before cancellation support.
+            with db.engine.begin() as connection:
+                connection.execute(
+                    text(
+                        "ALTER TABLE listings "
+                        "ADD COLUMN is_cancelled BOOLEAN NOT NULL DEFAULT FALSE"
+                    )
+                )
+
+        # Keep the pickup locations vendors choose from available on every start.
         seed_campus_locations()
+        if app.config["SEED_DEMO_DATA"]:
+            seed_demo_data()
 
     @app.cli.command("seed-locations")
     def seed_locations():
         seed_campus_locations()
-        click.echo("Locations seeded")
-
-    @app.cli.command("seed-locations")
-    def seed_locations():
-        for name in CAMPUS_LOCATIONS:
-            if not Location.query.filter_by(name=name).first():
-                db.session.add(Location(name=name))
-        db.session.commit()
         click.echo("Locations seeded")
 
     @app.template_filter("campus_time")
@@ -101,8 +205,15 @@ def create_app():
 
     @app.get("/")
     def index():
-        # Tell a visitor that the app is running.
-        return jsonify(name="CampusEats", status="running")
+        if not current_user.is_authenticated:
+            return redirect(url_for("login"))
+
+        home = (
+            "vendor_home"
+            if current_user.role == "Vendor"
+            else "student_home"
+        )
+        return redirect(url_for(home))
 
     @app.get("/healthz")
     def health():

@@ -21,5 +21,5 @@ The recorded goal was to deliver registration/login (US1), listing creation (US2
 
 - The repository does not contain review-meeting minutes, a demo record, or Product Owner acceptance; this summary is based on committed artifacts and test records only.
 - The Sprint 1 board image is placeholder text rather than a board screenshot, so it does not demonstrate board progress.
-- Reconcile the Sprint 1 estimate discrepancy (11 planned versus 14 points from the listed story estimates) and record whether US4 was deliberately pulled into Sprint 1.
+- Record whether US4 was deliberately pulled into Sprint 1 and include it in actual burndown results.
 - Confirm each story's full acceptance criteria against the Docker Compose deployment and record the results.

@@ -142,17 +142,19 @@ Before writing any code, split the backlog across the three sprints and record i
 * Planned burndown: list the story points remaining at the start and after each planned sprint.
 
 ```
-Team capacity (story points per sprint): <your team's capacity>
+Team capacity (story points per sprint): <confirm with the team>
 
-Justification (one or two sentences: team size, hours available, course load): <justification>
+Justification (one or two sentences: team size, hours available, course load): <confirm with the team>
 ```
 
 | Sprint | User stories (in order) | Story points planned | Points remaining after sprint | Dependencies checked (Y/N) |
 | --- | --- | --- | --- | --- |
-| Sprint 1 | US1 -> US2 -> US3 -> US8 | 11 | 24 | Y |
-| Sprint 2 | US4 -> US6 -> US7 | 13 | 11 | Y |
-| Sprint 3 | US5 -> US9 -> US10 | 11 | 0 | Y |
-| **Total** | US1-US10 | 43 | — | — |
+| Sprint 1 | US1 -> US2 -> US3 -> US8 | 14 | 29 | Y |
+| Sprint 2 | US4 -> US6 -> US7 | 16 | 13 | Y |
+| Sprint 3 | US5 -> US10 | 8 | 5 | Y |
+| **Total planned** | US1-US8, US10 | 38 | — | — |
+
+
 
 # Sprint Boards
 
@@ -191,19 +193,22 @@ docker compose up --build
 
 Open the app at http://localhost:5000. The `/healthz` endpoint checks the PostgreSQL connection. Docker Compose has local-only development defaults so the app also starts if no `.env` file is present; set your own values in `.env` for local work, and do not commit that file. The default Flask development server and credentials are for development only.
 
-<<<<<<< HEAD
-After the app starts, seed the pickup locations vendors can choose from:
-=======
-The app creates the database tables and seeds the pickup locations vendors can
-choose from automatically on startup. The seed operation is safe to repeat.
-To run it manually when needed:
->>>>>>> 1889ee2 (US8 version2: bug fix for seed-locations)
+
+
+
+The app creates the database tables and seeds the pickup locations automatically
+on startup. With `SEED_DEMO_DATA=1` (the default), it also creates demo accounts
+and sample listings. See **Demo accounts and sample listings** below for the
+credentials and details. Set `SEED_DEMO_DATA=0` to disable demo seeding.
+
+To seed only the pickup locations manually, run:
 
 ```powershell
 docker compose exec web flask --app app seed-locations
 ```
 
-The command is safe to run more than once. When running Flask directly from the app directory, use `flask --app app seed-locations`.
+This command is safe to run more than once. When running Flask directly from
+the app directory, use `flask --app app seed-locations`.
 
 The instructor must be able to run the app with a single command from the repository root:
 
@@ -212,6 +217,42 @@ docker compose up --build
 ```
 
 and then open it at http://localhost:5000. The README must list this command and include seed accounts (at least one vendor and one student with a few sample listings) created automatically on first start, so the app can be graded without manual data entry.
+
+### Demo accounts and sample listings
+
+Start the app with:
+
+```powershell
+docker compose up --build
+```
+
+Open http://localhost:5000. On first startup, the app automatically
+creates these demo accounts:
+
+| Role | Email | Initial password |
+| --- | --- | --- |
+| Vendor | demo.vendor@example.com | CampusEats123! |
+| Student | demo.student@example.com | CampusEats123! |
+
+These credentials are for the local demonstration setup.
+
+When the demo vendor is first created, the app also creates:
+
+- Demo: Vegan rice bowl — 5 portions at Student Union.
+- Demo: Vegetarian pasta — 8 portions at Library.
+- Demo: Lentil soup — 6 portions at Library.
+
+Their pickup windows are open immediately and end 24 hours after
+creation. The student can browse and reserve them, and the vendor
+can manage the listings and confirm pickups.
+
+Restarting preserves existing accounts, passwords, listings, and
+reservations. It does not duplicate the samples or refresh their
+pickup windows. Expired listings stop appearing in student browsing.
+
+For tests that need a fresh database without demo accounts or listings,
+set `SEED_DEMO_DATA=0` in `.env` before starting that database.
+Locations are still seeded. This setting does not remove existing data.
 
 # Scrum Evidence
 
@@ -240,6 +281,28 @@ Write one automated black box test with Selenium for one user story of your choi
 | --- | --- | --- | --- | --- | --- |
 | US1 | 2: duplicate email rejected | Name | 99/99/26 | passed |  |
 | ... | ... | ... | ... | ... | ... |
+
+### Selenium black-box test
+
+The US2 browser test registers a vendor through the website, checks that invalid
+pickup windows are rejected, posts a valid listing, and verifies that a student
+cannot open the vendor-only listing form. It uses Selenium against the
+Compose-hosted Chrome browser and the running Flask/PostgreSQL deployment.
+
+From the repository root, run the browser test:
+
+```powershell
+docker compose -p campuseats-blackbox --profile testing run --build --rm test-runner
+```
+
+Compose starts an isolated PostgreSQL database, the app, and a Selenium Chrome
+browser. Test accounts and listings are written only to this disposable
+database, not the development database. The test runner installs
+`requirements-test.txt`; after the test, remove the test containers and network:
+
+```powershell
+docker compose -p campuseats-blackbox --profile testing down
+```
 
 # Repository Structure
 

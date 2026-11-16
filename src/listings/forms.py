@@ -12,7 +12,14 @@ from wtforms import (
     TextAreaField,
 )
 from wtforms.fields import DateTimeLocalField
-from wtforms.validators import DataRequired, Length, NumberRange, ValidationError
+from wtforms.validators import (
+    DataRequired,
+    InputRequired,
+    Length,
+    NumberRange,
+    Optional,
+    ValidationError,
+)
 from wtforms.widgets import CheckboxInput, ListWidget
 
 from models import DIETARY_TAGS, Location
@@ -87,9 +94,9 @@ class ReservationForm:
     pass
 
 
-class ListingEditForm:
-    # TODO (US5): Define listing edit fields and reuse the US2 listing validation rules.
-    pass
+class ListingEditForm(ListingForm):
+    # Reuse US2's field rules while giving the edit page its own button label.
+    submit = SubmitField("Save changes")
 
 
 class PickupCodeForm(FlaskForm):
@@ -101,11 +108,10 @@ class PickupCodeForm(FlaskForm):
     submit = SubmitField("Confirm pickup")
 
 
-class DashboardDateRangeForm:
-    # TODO (US9): Define and validate a dashboard date range.
-    pass
-
-
-class RatingForm:
-    # TODO (US10): Define a 1-5 star rating and optional comment up to 300 characters.
-    pass
+class RatingForm(FlaskForm):
+    # US10: A 1-5 star rating and an optional comment of up to 300 characters.
+    stars = IntegerField(
+        "Stars", validators=[InputRequired(), NumberRange(min=1, max=5)]
+    )
+    comment = TextAreaField("Comment (optional)", validators=[Optional(), Length(max=300)])
+    submit = SubmitField("Submit")
